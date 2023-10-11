@@ -8,6 +8,7 @@ import options from './modules/options'
 import template from './modules/template'
 import addons from './modules/addons'
 import socials from './modules/socials'
+import signup from '../views/auth/Signup.vue'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     options,
     template,
     addons,
-    socials
+    socials,
+    signup
   }
 })

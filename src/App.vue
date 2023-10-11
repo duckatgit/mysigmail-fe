@@ -3,24 +3,20 @@
     id="app"
     v-page-loading="app.loading"
   >
-    <sidebar />
-    <config-panel />
-    <preview />
+
+    <signup />
   </div>
 </template>
 
 <script>
-import Sidebar from './components/Sidebar'
-import ConfigPanel from './components/ConfigPanel'
-import Preview from './components/Preview'
+
+import Signup from './views/auth/Signup.vue'
 import { mapState } from 'vuex'
 
 export default {
   name: 'App',
   components: {
-    Sidebar,
-    ConfigPanel,
-    Preview
+    Signup
   },
 
   computed: {
@@ -42,15 +38,15 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
 }
-#app {
-  display: grid;
-  grid-template-columns: 85px 550px 1fr;
-  height: 100vh;
-}
-.desc {
-  flex-grow: 1;
-  font-size: 12px;
-  line-height: 1.5em;
-  color: #aaa;
-}
+// #app {
+//   // display: grid;
+//   // grid-template-columns: 85px 550px 1fr;
+//   // height: 100vh;
+// }
+// .desc {
+//   flex-grow: 1;
+//   font-size: 12px;
+//   line-height: 1.5em;
+//   color: #aaa;
+// }
 </style>

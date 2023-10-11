@@ -8,7 +8,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/basic'
+      redirect: '/sign-up'
     },
     {
       path: '/basic',
@@ -39,6 +39,11 @@ export default new Router({
       meta: { title: 'Projects' },
       component: () =>
         import(/* webpackChunkName: "projects" */ './views/Projects.vue')
+    },
+    {
+      path: '/sign-up',
+      component: () =>
+        import(/* webpackChunkName: "projects" */ './views/auth/Signup.vue')
     }
   ]
 })
