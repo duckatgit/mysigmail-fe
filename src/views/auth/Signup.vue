@@ -1,12 +1,17 @@
 <template>
   <div class="row">
     <div class="banner-side">
-      <img src="">
+      <img
+        :src="SignupBanner"
+        height="520"
+        width="520"
+        style="margin-left: 80px;"
+      >
     </div>
     <div class="login-page">
       <div class="auth-card">
         <div class="login-container">
-          <h2 class="heading-login-text text-center">Register</h2>
+          <h2 class="heading-login-text text-center">Create Account</h2>
           <form @submit.prevent="submitForm">
             <div class="form-group mb-b">
               <label>First Name</label>
@@ -38,9 +43,9 @@
             <div class="form-group mb-b">
               <label>Password</label>
               <div class="position-relative">
-
                 <input
                   v-model="formData.password"
+                  type="password"
                   class="form-control"
                 >
               </div>
@@ -90,9 +95,12 @@
 </template>
 
 <script>
+import SignupBanner from '../../assets/img/signup-banner.png'
+
 export default {
   data () {
     return {
+      SignupBanner,
       formData: {
         firstName: '',
         lastName: '',
@@ -102,6 +110,7 @@ export default {
       }
     }
   },
+
   methods: {
     async submitForm () {
       try {
@@ -125,6 +134,7 @@ export default {
         if (response.ok) {
           const result = await response.json()
           console.log('Signup successful:', result)
+          this.$router.push({ name: 'verify-email', query: { email: payload.email } })
         } else {
           console.error('Signup failed:', response.statusText)
         }

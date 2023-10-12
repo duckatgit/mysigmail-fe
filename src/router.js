@@ -43,8 +43,11 @@ export default new Router({
     },
     {
       path: '/verify-email',
+      name: 'verify-email',
+      props: true,
       component: () =>
         import(/* webpackChunkName: "projects" */ './views/auth/VerifyEmail.vue')
     }
+
   ]
 })
