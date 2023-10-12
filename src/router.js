@@ -7,10 +7,6 @@ export default new Router({
   linkActiveClass: 'active',
   routes: [
     {
-      path: '/',
-      redirect: '/sign-up'
-    },
-    {
       path: '/basic',
       meta: { title: 'Basic signature details' },
       component: () =>
@@ -44,6 +40,11 @@ export default new Router({
       path: '/sign-up',
       component: () =>
         import(/* webpackChunkName: "projects" */ './views/auth/Signup.vue')
+    },
+    {
+      path: '/verify-email',
+      component: () =>
+        import(/* webpackChunkName: "projects" */ './views/auth/VerifyEmail.vue')
     }
   ]
 })

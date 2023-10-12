@@ -1,62 +1,90 @@
 <template>
-  <div class="signup-form">
-    <div class="form-container">
-      <h1>Sign Up</h1>
-      <form @submit.prevent="submitForm">
-        <div class="form-group">
-          <div class="flex-row">
-            <div class="flex-col">
-              <label for="firstName">First Name</label>
+  <div class="row">
+    <div class="banner-side">
+      <img src="">
+    </div>
+    <div class="login-page">
+      <div class="auth-card">
+        <div class="login-container">
+          <h2 class="heading-login-text text-center">Register</h2>
+          <form @submit.prevent="submitForm">
+            <div class="form-group mb-b">
+              <label>First Name</label>
               <input
-                id="firstName"
                 v-model="formData.firstName"
                 type="text"
-                required
+                class="form-control"
               >
             </div>
-            <div class="flex-col">
-              <label for="lastName">Last Name</label>
+
+            <div class="form-group mb-b">
+              <label>Last Name</label>
               <input
-                id="lastName"
-                v-model="formData.lastName"
+                v-model="formData.lastname"
                 type="text"
-                required
+                class="form-control"
               >
             </div>
+
+            <div class="form-group mb-b">
+              <label>Email Address</label>
+              <input
+                v-model="formData.email"
+                type="text"
+                class="form-control"
+              >
+            </div>
+
+            <div class="form-group mb-b">
+              <label>Password</label>
+              <div class="position-relative">
+
+                <input
+                  v-model="formData.password"
+                  class="form-control"
+                >
+              </div>
+            </div>
+
+            <div class="form-group mb-b">
+              <label>Gender</label>
+              <select
+                v-model="formData.gender"
+                class="form-control"
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div
+              class="d-flex forget-password"
+              style="justify-content: space-between"
+            >
+              <!-- <p><a href="#">Forgot Password?</a></p> -->
+            </div>
+            <div class="text-center">
+              <button
+                type="submit"
+                class="continue"
+                mat-raised-button
+                color="primary"
+              >Register</button>
+            </div>
+          </form>
+
+          <div
+            class="already text-center"
+            style="margin-top: 16px"
+          >
+            <p>
+              Already have an account?
+              <a href="javascript:void(0)">Login</a>
+            </p>
           </div>
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            v-model="formData.email"
-            type="email"
-            required
-          >
-        </div>
-        <div class="form-group">
-          <label for="gender">Gender</label>
-          <select
-            id="gender"
-            v-model="formData.gender"
-            required
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="formData.password"
-            type="password"
-            required
-          >
-        </div>
-        <button type="submit">Sign Up</button>
-      </form>
+      </div>
     </div>
   </div>
 </template>
@@ -109,67 +137,111 @@ export default {
 }
 </script>
 
-<style>
-/* Styles */
-.signup-form {
+<style scoped>
+.row {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f2f2f2;
 }
 
-.form-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+.banner-side {
+  width: 50%;
+}
+
+.login-page {
+  width: 50%;
+}
+
+.login-page div.auth-card {
+  box-shadow: 0px 0px 4px 0px rgba(86, 86, 86, 0.25);
+  border-radius: 12px;
+  padding: 30px 29px 27px;
+  max-width: 740px;
+  margin: 20px auto;
+  width: 60%;
+  display: block;
+}
+
+h2.heading-login-text {
+  font-size: 21px;
+  margin: 0 0 30px 0;
   text-align: center;
-  max-width: 400px;
 }
 
-h1 {
-  color: #333;
+.mb-b {
+  margin-bottom: 16px;
 }
 
 .form-group {
-  margin: 10px 0;
-}
-
-.flex-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.flex-col {
-  flex: 1;
-  margin: 12px;
-}
-
-label {
-  display: block;
-  color: #555;
-}
-
-input,
-select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  margin-bottom: 10px;
   outline: none;
 }
 
-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.form-group label {
+  margin-bottom: 5px;
+  font-size: 13px;
+  color: #242b3a;
+  display: block;
+  font-weight: 500;
 }
 
-button:hover {
-  background-color: #0056b3;
+.position-relative {
+  position: relative !important;
+}
+
+.position-icon.uername {
+  position: absolute;
+  top: 14px;
+  left: 10px;
+  width: 16px;
+}
+
+.login-page .form-control {
+  color: #2e2c33;
+  font-weight: 400;
+  border-radius: 4px;
+  background: #f6f6f6;
+  height: 45px !important;
+  padding: 13px 10px;
+  border: 1px solid #E0E0E0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input.form-control {
+  background: #f6f6f6 !important;
+}
+
+.forget-password a {
+  color: #3568e5;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.text-center {
+  text-align: center;
+}
+
+button.continue {
+  background-color: #255384;
+  color: #fff;
+  font-size: 16px;
+  padding: 6px 40px;
+  font-weight: 400;
+  box-shadow: none;
+  border: 0;
+  line-height: 36px;
+  border-radius: 5px;
+}
+
+.login-page .already p {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 25px 0 0 0;
+}
+
+.login-page .already a {
+  color: #3568e5;
 }
 </style>

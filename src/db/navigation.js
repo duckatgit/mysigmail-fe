@@ -19,10 +19,6 @@ export default {
     {
       name: 'Projects',
       path: 'projects'
-    },
-    {
-      name: 'sign-up',
-      path: 'sign-up'
     }
   ]
 }
