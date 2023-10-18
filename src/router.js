@@ -47,6 +47,24 @@ export default new Router({
       props: true,
       component: () =>
         import(/* webpackChunkName: "projects" */ './views/auth/VerifyEmail.vue')
+    },
+    {
+      path: '/sign-in',
+      name: 'sign-in',
+      component: () =>
+        import(/* webpackChunkName: "projects" */ './views/auth/Signin.vue')
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () =>
+        import(/* webpackChunkName: "projects" */ './views/auth/ForgotPassword')
+    },
+    {
+      path: '/set-new-password',
+      name: 'set-new-password',
+      component: () =>
+        import(/* webpackChunkName: "projects" */ './views/auth/ForgotPassword')
     }
 
   ]

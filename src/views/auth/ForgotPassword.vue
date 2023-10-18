@@ -2,7 +2,7 @@
   <div class="row">
     <div class="banner-side">
       <img
-        :src="SignupBanner"
+        :src="forgotPasswordBanner"
         height="520"
         width="520"
         style="margin-left: 80px;"
@@ -11,25 +11,8 @@
     <div class="login-page">
       <div class="auth-card">
         <div class="login-container">
-          <h2 class="heading-login-text text-center">Create Account</h2>
+          <h2 class="heading-login-text text-center">Forgot Password</h2>
           <form @submit.prevent="submitForm">
-            <div class="form-group mb-b">
-              <label>First Name</label>
-              <input
-                v-model="formData.firstName"
-                type="text"
-                class="form-control"
-              >
-            </div>
-
-            <div class="form-group mb-b">
-              <label>Last Name</label>
-              <input
-                v-model="formData.lastname"
-                type="text"
-                class="form-control"
-              >
-            </div>
 
             <div class="form-group mb-b">
               <label>Email Address</label>
@@ -40,28 +23,13 @@
               >
             </div>
 
-            <div class="form-group mb-b">
-              <label>Password</label>
-              <div class="position-relative">
-                <input
-                  v-model="formData.password"
-                  type="password"
-                  class="form-control"
-                >
-              </div>
-            </div>
+            <!-- <div
+              class="forgot"
+            >
+              Didn't receive an email?
+              <a @click="handleResendEmail">Resend </a>
 
-            <div class="form-group mb-b">
-              <label>Gender</label>
-              <select
-                v-model="formData.gender"
-                class="form-control"
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+            </div> -->
 
             <div
               class="d-flex forget-password"
@@ -75,7 +43,7 @@
                 class="continue"
                 mat-raised-button
                 color="primary"
-              >Register</button>
+              >Submit</button>
             </div>
           </form>
 
@@ -84,34 +52,29 @@
             style="margin-top: 16px"
           >
             <p>
-              Already have an account?
               <router-link
-
                 to="/sign-in"
                 class="sidebar__nav-item"
-              >Login</router-link>
+              >Back to login</router-link>
 
             </p>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
-import SignupBanner from '../../assets/img/signup-banner.png'
+import forgotPasswordBanner from '../../assets/img/forgot password-banner.png'
 
 export default {
   data () {
     return {
-      SignupBanner,
+      forgotPasswordBanner,
       formData: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        gender: 'male'
+        email: ''
       }
     }
   },
@@ -119,7 +82,7 @@ export default {
   methods: {
     async submitForm () {
       try {
-        const URL = 'http://localhost:4200/api/auth/sign-up'
+        const URL = 'http://localhost:4200/api/auth/forgot-password'
         const payload = this.formData
 
         const response = await fetch(URL, {
@@ -128,20 +91,21 @@ export default {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            gender: payload.gender,
-            email: payload.email,
-            password: payload.password
+            email: payload.email
           })
         })
 
-        if (response.status === 200) {
-          const result = await response.json()
-          console.log('Signup successful:', result)
-          this.$router.push({ name: 'verify-email', query: { email: payload.email } })
+        if (response.ok) {
+          await response.json()
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Email has been sent successfully'
+            },
+            4000
+          )
         } else {
-          console.error('Signup failed:', response.statusText)
+          console.error('Signip failed:', response.statusText)
         }
       } catch (error) {
         console.error('An error occurred:', error)
@@ -225,6 +189,18 @@ h2.heading-login-text {
 
 input.form-control {
   background: #f6f6f6 !important;
+}
+
+.login-container .forgot{
+  text-align: end;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+
+}
+.forgot a{
+  color: #3568e5 !important;
+  cursor: pointer;
 }
 
 .forget-password a {

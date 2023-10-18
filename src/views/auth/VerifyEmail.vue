@@ -49,12 +49,31 @@ export default {
         })
 
         if (response.status === 200) {
-          alert('Email verified Success')
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Your email has been verified successfully. Now you can login'
+            },
+            4000
+          )
+          this.$router.push({ name: 'sign-in' })
         } else {
-          alert('Invalid OTP')
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Invalid OTP'
+            },
+            4000
+          )
         }
       } catch (error) {
-        console.error('An error occurred:', error)
+        this.$notify(
+          {
+            group: 'top',
+            title: 'Server Error!'
+          },
+          4000
+        )
       }
     },
     async resendAPI () {
@@ -113,17 +132,19 @@ input {
 }
 
 button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 10px;
+  background-color: #255384;
+    color: #fff;
+    font-size: 16px;
+    padding: 6px 40px;
+    font-weight: 400;
+    box-shadow: none;
+    border: 0;
+    line-height: 36px;
+    border-radius: 5px;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #1b3e63;
 }
 
 .error {

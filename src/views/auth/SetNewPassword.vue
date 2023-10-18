@@ -2,7 +2,7 @@
   <div class="row">
     <div class="banner-side">
       <img
-        :src="SignupBanner"
+        :src="setNewPasswordBanner"
         height="520"
         width="520"
         style="margin-left: 80px;"
@@ -11,37 +11,11 @@
     <div class="login-page">
       <div class="auth-card">
         <div class="login-container">
-          <h2 class="heading-login-text text-center">Create Account</h2>
+          <h2 class="heading-login-text text-center">Set New Password</h2>
           <form @submit.prevent="submitForm">
-            <div class="form-group mb-b">
-              <label>First Name</label>
-              <input
-                v-model="formData.firstName"
-                type="text"
-                class="form-control"
-              >
-            </div>
 
             <div class="form-group mb-b">
-              <label>Last Name</label>
-              <input
-                v-model="formData.lastname"
-                type="text"
-                class="form-control"
-              >
-            </div>
-
-            <div class="form-group mb-b">
-              <label>Email Address</label>
-              <input
-                v-model="formData.email"
-                type="text"
-                class="form-control"
-              >
-            </div>
-
-            <div class="form-group mb-b">
-              <label>Password</label>
+              <label>New Password</label>
               <div class="position-relative">
                 <input
                   v-model="formData.password"
@@ -50,49 +24,27 @@
                 >
               </div>
             </div>
-
             <div class="form-group mb-b">
-              <label>Gender</label>
-              <select
-                v-model="formData.gender"
-                class="form-control"
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
+              <label>Confirm New Password</label>
+              <div class="position-relative">
+                <input
+                  v-model="formData.confirmPassword"
+                  type="password"
+                  class="form-control"
+                >
+              </div>
             </div>
 
-            <div
-              class="d-flex forget-password"
-              style="justify-content: space-between"
-            >
-              <!-- <p><a href="#">Forgot Password?</a></p> -->
-            </div>
             <div class="text-center">
               <button
                 type="submit"
                 class="continue"
                 mat-raised-button
                 color="primary"
-              >Register</button>
+              >Submit</button>
             </div>
           </form>
 
-          <div
-            class="already text-center"
-            style="margin-top: 16px"
-          >
-            <p>
-              Already have an account?
-              <router-link
-
-                to="/sign-in"
-                class="sidebar__nav-item"
-              >Login</router-link>
-
-            </p>
-          </div>
         </div>
       </div>
     </div>
@@ -100,18 +52,15 @@
 </template>
 
 <script>
-import SignupBanner from '../../assets/img/signup-banner.png'
+import setNewPasswordBanner from '../../assets/img/set-new-password-banner.png'
 
 export default {
   data () {
     return {
-      SignupBanner,
+      setNewPasswordBanner,
       formData: {
-        firstName: '',
-        lastName: '',
-        email: '',
         password: '',
-        gender: 'male'
+        confirmPassword: ''
       }
     }
   },
@@ -119,29 +68,32 @@ export default {
   methods: {
     async submitForm () {
       try {
-        const URL = 'http://localhost:4200/api/auth/sign-up'
+        const URL = 'http://localhost:4200/api/auth/set-new-password'
+        const query = this.$route.query
         const payload = this.formData
 
         const response = await fetch(URL, {
-          method: 'POST',
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            gender: payload.gender,
-            email: payload.email,
+            email: query.email,
             password: payload.password
           })
         })
 
-        if (response.status === 200) {
-          const result = await response.json()
-          console.log('Signup successful:', result)
-          this.$router.push({ name: 'verify-email', query: { email: payload.email } })
+        if (response.ok) {
+          await response.json()
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Password has been updated successfully'
+            },
+            4000
+          )
         } else {
-          console.error('Signup failed:', response.statusText)
+          console.error('failed:', response.statusText)
         }
       } catch (error) {
         console.error('An error occurred:', error)
@@ -225,6 +177,15 @@ h2.heading-login-text {
 
 input.form-control {
   background: #f6f6f6 !important;
+}
+
+.login-container .forgot,
+.forgot a {
+  text-align: end;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3568e5 !important;
+
 }
 
 .forget-password a {

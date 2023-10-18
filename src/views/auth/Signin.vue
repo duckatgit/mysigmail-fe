@@ -2,7 +2,7 @@
   <div class="row">
     <div class="banner-side">
       <img
-        :src="SignupBanner"
+        :src="SigninBanner"
         height="520"
         width="520"
         style="margin-left: 80px;"
@@ -11,25 +11,8 @@
     <div class="login-page">
       <div class="auth-card">
         <div class="login-container">
-          <h2 class="heading-login-text text-center">Create Account</h2>
+          <h2 class="heading-login-text text-center">Login</h2>
           <form @submit.prevent="submitForm">
-            <div class="form-group mb-b">
-              <label>First Name</label>
-              <input
-                v-model="formData.firstName"
-                type="text"
-                class="form-control"
-              >
-            </div>
-
-            <div class="form-group mb-b">
-              <label>Last Name</label>
-              <input
-                v-model="formData.lastname"
-                type="text"
-                class="form-control"
-              >
-            </div>
 
             <div class="form-group mb-b">
               <label>Email Address</label>
@@ -51,16 +34,10 @@
               </div>
             </div>
 
-            <div class="form-group mb-b">
-              <label>Gender</label>
-              <select
-                v-model="formData.gender"
-                class="form-control"
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
+            <div class="forgot">
+
+              <router-link to="/forgot-password">Forgot Password?</router-link>
+
             </div>
 
             <div
@@ -75,7 +52,7 @@
                 class="continue"
                 mat-raised-button
                 color="primary"
-              >Register</button>
+              >Login</button>
             </div>
           </form>
 
@@ -84,12 +61,11 @@
             style="margin-top: 16px"
           >
             <p>
-              Already have an account?
+              Don't have an account?
               <router-link
-
-                to="/sign-in"
+                to="/sign-up"
                 class="sidebar__nav-item"
-              >Login</router-link>
+              >Create Account</router-link>
 
             </p>
           </div>
@@ -100,18 +76,15 @@
 </template>
 
 <script>
-import SignupBanner from '../../assets/img/signup-banner.png'
+import SigninBanner from '../../assets/img/signin-banner.png'
 
 export default {
   data () {
     return {
-      SignupBanner,
+      SigninBanner,
       formData: {
-        firstName: '',
-        lastName: '',
         email: '',
-        password: '',
-        gender: 'male'
+        password: ''
       }
     }
   },
@@ -119,7 +92,7 @@ export default {
   methods: {
     async submitForm () {
       try {
-        const URL = 'http://localhost:4200/api/auth/sign-up'
+        const URL = 'http://localhost:4200/api/auth/sign-in'
         const payload = this.formData
 
         const response = await fetch(URL, {
@@ -128,23 +101,31 @@ export default {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            gender: payload.gender,
             email: payload.email,
             password: payload.password
           })
         })
 
-        if (response.status === 200) {
-          const result = await response.json()
-          console.log('Signup successful:', result)
-          this.$router.push({ name: 'verify-email', query: { email: payload.email } })
-        } else {
-          console.error('Signup failed:', response.statusText)
+        if (response.ok) {
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Logged in successfully'
+            },
+            4000
+          )
+          this.$router.push({ path: '/basic' })
+          const responseData = await response.json()
+          localStorage.setItem('token', responseData.data.user.token)
         }
       } catch (error) {
-        console.error('An error occurred:', error)
+        this.$notify(
+          {
+            group: 'top',
+            title: error.response
+          },
+          4000
+        )
       }
     }
 
@@ -225,6 +206,15 @@ h2.heading-login-text {
 
 input.form-control {
   background: #f6f6f6 !important;
+}
+
+.login-container .forgot,
+.forgot a {
+  text-align: end;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3568e5 !important;
+
 }
 
 .forget-password a {
