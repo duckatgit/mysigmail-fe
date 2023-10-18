@@ -19,7 +19,7 @@
               <input
                 v-model="formData.email"
                 type="text"
-                class="form-control"
+                :class="{ 'form-control': true, 'validate': formSubmitted }"
               >
             </div>
 
@@ -75,40 +75,57 @@ export default {
       forgotPasswordBanner,
       formData: {
         email: ''
-      }
+      },
+      formSubmitted: false
     }
   },
 
   methods: {
     async submitForm () {
+      const payload = this.formData
       try {
-        const URL = 'http://localhost:4200/api/auth/forgot-password'
-        const payload = this.formData
-
-        const response = await fetch(URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: payload.email
-          })
-        })
-
-        if (response.ok) {
-          await response.json()
-          this.$notify(
-            {
-              group: 'top',
-              title: 'Email has been sent successfully'
-            },
-            4000
-          )
+        if (payload.email === '' || payload.email.trim() === '') {
+          this.formSubmitted = true
         } else {
-          console.error('Signip failed:', response.statusText)
+          const URL = 'http://localhost:4200/api/auth/forgot-password'
+
+          const response = await fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: payload.email
+            })
+          })
+          const result = await response.json()
+
+          if (response.ok) {
+            this.$notify(
+              {
+                group: 'top',
+                title: 'Email has been sent successfully'
+              },
+              4000
+            )
+          } else {
+            this.$notify(
+              {
+                group: 'top',
+                title: result.data
+              },
+              4000
+            )
+          }
         }
       } catch (error) {
-        console.error('An error occurred:', error)
+        this.$notify(
+          {
+            group: 'top',
+            title: 'Server Error!'
+          },
+          4000
+        )
       }
     }
 
@@ -187,18 +204,23 @@ h2.heading-login-text {
   box-sizing: border-box;
 }
 
+.validate {
+  border: 1px solid red !important;
+}
+
 input.form-control {
   background: #f6f6f6 !important;
 }
 
-.login-container .forgot{
+.login-container .forgot {
   text-align: end;
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 20px;
 
 }
-.forgot a{
+
+.forgot a {
   color: #3568e5 !important;
   cursor: pointer;
 }

@@ -5,33 +5,34 @@ Vue.use(Router)
 
 export default new Router({
   linkActiveClass: 'active',
+  mode: 'history',
   routes: [
     {
-      path: '/basic',
+      path: '/dashboard/basic',
       meta: { title: 'Basic signature details' },
       component: () =>
         import(/* webpackChunkName: "basic" */ './views/Basic.vue')
     },
     {
-      path: '/social',
+      path: '/dashboard/social',
       meta: { title: 'Social media links' },
       component: () =>
         import(/* webpackChunkName: "social" */ './views/Social.vue')
     },
     {
-      path: '/options',
+      path: '/dashboard/options',
       meta: { title: 'Signature options' },
       component: () =>
         import(/* webpackChunkName: "options" */ './views/Options.vue')
     },
     {
-      path: '/addons',
+      path: '/dashboard/addons',
       meta: { title: 'Signature addons' },
       component: () =>
         import(/* webpackChunkName: "addons" */ './views/Addons.vue')
     },
     {
-      path: '/projects',
+      path: '/dashboard/projects',
       meta: { title: 'Projects' },
       component: () =>
         import(/* webpackChunkName: "projects" */ './views/Projects.vue')

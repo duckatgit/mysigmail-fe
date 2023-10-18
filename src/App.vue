@@ -1,13 +1,14 @@
 <template>
   <div>
     <div
-      v-if="currentPathname !== '/basic'"
+      v-if="!currentPathname.includes('dashboard')"
       id="app"
       v-page-loading="app.loading"
     >
-      <div v-if="currentPathname === '/sign-up'">
+      <div v-if="currentPathname === '/sign-up' || currentPathname === '/'">
         <signup />
       </div>
+
       <div v-if="currentPathname === '/verify-email'">
         <verifyEmail />
       </div>
@@ -23,17 +24,17 @@
 
     </div>
     <div
-      v-if="currentPathname === '/basic'"
+      v-if="currentPathname.includes('dashboard')"
+
       id="new-app"
       v-page-loading="app.loading"
     >
-      <sidebar v-if="currentPathname === '/basic'" />
-      <config-panel v-if="currentPathname === '/basic'" />
-      <preview v-if="currentPathname === '/basic'" />
+      <sidebar />
+      <config-panel />
+      <preview />
 
     </div>
   </div>
-
 </template>
 
 <script>
@@ -67,7 +68,8 @@ export default {
 
   data () {
     return {
-      currentPathname: this.$route.path // Initialize the variable with the current path
+      currentPathname: window.location.pathname, // Initialize the variable with the current path
+      token: localStorage.getItem('token')
     }
   },
 
@@ -84,6 +86,36 @@ export default {
     this.$store.commit('SET_LOADING', true)
     await this.$store.dispatch('addInitialProject')
     this.$store.commit('SET_LOADING', false)
+  },
+  async mounted () {
+    const currentPath = window.location.pathname
+    if (currentPath.includes('dashboard')) {
+      try {
+        const URL = 'http://localhost:4200/api/auth/validate-token'
+
+        const response = await fetch(URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}` // Include the bearer token
+          }
+        })
+
+        if (response.status === 401) {
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Session Expired!'
+            },
+            4000
+          )
+          this.$router.push({ path: '/sign-in' })
+          localStorage.removeItem('token')
+        }
+      } catch (error) {
+        console.error('An error occurred:', error)
+      }
+    }
   }
 
 }
@@ -96,16 +128,19 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
 }
+
 #app {
   display: grid;
   // grid-template-columns: 85px 550px 1fr;
   height: 100vh;
 }
+
 #new-app {
   display: grid;
   grid-template-columns: 85px 550px 1fr;
   height: 100vh;
 }
+
 .desc {
   flex-grow: 1;
   font-size: 12px;

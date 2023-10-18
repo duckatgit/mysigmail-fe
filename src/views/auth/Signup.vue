@@ -18,16 +18,16 @@
               <input
                 v-model="formData.firstName"
                 type="text"
-                class="form-control"
+                :class="fieldErrors.firstName ? 'form-control validate' : 'form-control'"
               >
             </div>
 
             <div class="form-group mb-b">
               <label>Last Name</label>
               <input
-                v-model="formData.lastname"
+                v-model="formData.lastName"
                 type="text"
-                class="form-control"
+                :class="fieldErrors.lastName ? 'form-control validate' : 'form-control'"
               >
             </div>
 
@@ -35,8 +35,8 @@
               <label>Email Address</label>
               <input
                 v-model="formData.email"
-                type="text"
-                class="form-control"
+                type="email"
+                :class="fieldErrors.email ? 'form-control validate' : 'form-control'"
               >
             </div>
 
@@ -46,7 +46,7 @@
                 <input
                   v-model="formData.password"
                   type="password"
-                  class="form-control"
+                  :class="fieldErrors.password ? 'form-control validate' : 'form-control'"
                 >
               </div>
             </div>
@@ -55,8 +55,12 @@
               <label>Gender</label>
               <select
                 v-model="formData.gender"
-                class="form-control"
+                :class="fieldErrors.gender ? 'form-control validate' : 'form-control'"
               >
+                <option
+                  value=""
+                  disabled
+                >Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
@@ -86,7 +90,6 @@
             <p>
               Already have an account?
               <router-link
-
                 to="/sign-in"
                 class="sidebar__nav-item"
               >Login</router-link>
@@ -111,40 +114,63 @@ export default {
         lastName: '',
         email: '',
         password: '',
-        gender: 'male'
-      }
+        gender: ''
+      },
+      fieldErrors: {}
     }
   },
 
   methods: {
     async submitForm () {
-      try {
-        const URL = 'http://localhost:4200/api/auth/sign-up'
-        const payload = this.formData
+      this.fieldErrors = {} // Clear previous errors
 
-        const response = await fetch(URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            gender: payload.gender,
-            email: payload.email,
-            password: payload.password
-          })
-        })
-
-        if (response.status === 200) {
-          const result = await response.json()
-          console.log('Signup successful:', result)
-          this.$router.push({ name: 'verify-email', query: { email: payload.email } })
-        } else {
-          console.error('Signup failed:', response.statusText)
+      for (const field in this.formData) {
+        if (this.formData[field] === '' || this.formData[field].trim() === '') {
+          this.fieldErrors[field] = true
         }
-      } catch (error) {
-        console.error('An error occurred:', error)
+      }
+      if (Object.keys(this.fieldErrors).length > 0) {
+
+      } else {
+        try {
+          const URL = 'http://localhost:4200/api/auth/sign-up'
+          const payload = this.formData
+
+          const response = await fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              firstName: payload.firstName,
+              lastName: payload.lastName,
+              gender: payload.gender,
+              email: payload.email,
+              password: payload.password
+            })
+          })
+          const result = await response.json()
+
+          if (response.status === 200) {
+            this.$router.push({ name: 'verify-email', query: { email: payload.email } })
+          } else {
+            this.$notify(
+              {
+                group: 'top',
+                title: result.data
+              },
+              4000
+            )
+          }
+        } catch (error) {
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Server Error!'
+            },
+            4000
+          )
+        }
       }
     }
 
@@ -258,5 +284,9 @@ button.continue {
 
 .login-page .already a {
   color: #3568e5;
+}
+
+.validate {
+  border: 1px solid red !important;
 }
 </style>

@@ -18,8 +18,8 @@
               <label>Email Address</label>
               <input
                 v-model="formData.email"
-                type="text"
-                class="form-control"
+                type="email"
+                :class="fieldErrors.email ? 'form-control validate' : 'form-control'"
               >
             </div>
 
@@ -29,7 +29,7 @@
                 <input
                   v-model="formData.password"
                   type="password"
-                  class="form-control"
+                  :class="fieldErrors.password ? 'form-control validate' : 'form-control'"
                 >
               </div>
             </div>
@@ -85,47 +85,68 @@ export default {
       formData: {
         email: '',
         password: ''
-      }
+      },
+      fieldErrors: {}
+
     }
   },
 
   methods: {
     async submitForm () {
-      try {
-        const URL = 'http://localhost:4200/api/auth/sign-in'
-        const payload = this.formData
+      this.fieldErrors = {} // Clear previous errors
 
-        const response = await fetch(URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: payload.email,
-            password: payload.password
+      for (const field in this.formData) {
+        if (this.formData[field] === '' || this.formData[field].trim() === '') {
+          this.fieldErrors[field] = true
+        }
+      }
+      if (Object.keys(this.fieldErrors).length > 0) {
+
+      } else {
+        try {
+          const URL = 'http://localhost:4200/api/auth/sign-in'
+          const payload = this.formData
+
+          const response = await fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: payload.email,
+              password: payload.password
+            })
           })
-        })
+          const result = await response.json()
 
-        if (response.ok) {
+          if (response.ok) {
+            this.$notify(
+              {
+                group: 'top',
+                title: 'Logged in successfully'
+              },
+              4000
+            )
+            this.$router.push({ path: '/dashboard/basic' })
+            localStorage.setItem('token', result.data.user.token)
+          } else {
+            this.$notify(
+              {
+                group: 'top',
+                title: result.data
+              },
+              4000
+            )
+          }
+        } catch (error) {
           this.$notify(
             {
               group: 'top',
-              title: 'Logged in successfully'
+              title: 'Server Error!'
             },
             4000
           )
-          this.$router.push({ path: '/basic' })
-          const responseData = await response.json()
-          localStorage.setItem('token', responseData.data.user.token)
         }
-      } catch (error) {
-        this.$notify(
-          {
-            group: 'top',
-            title: error.response
-          },
-          4000
-        )
       }
     }
 
@@ -248,5 +269,9 @@ button.continue {
 
 .login-page .already a {
   color: #3568e5;
+}
+
+.validate {
+  border: 1px solid red !important;
 }
 </style>

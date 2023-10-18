@@ -8,11 +8,9 @@
           v-model="otp"
           type="text"
           placeholder="Enter OTP"
+          :class="{'validate': formSubmitted }"
         >
-        <p
-          v-if="error"
-          class="error"
-        >{{ error }}</p>
+
         <p
           style="color: #007bff; cursor: pointer;"
           @click="resendAPI"
@@ -28,52 +26,57 @@ export default {
   data () {
     return {
       otp: '',
-      error: ''
+      formSubmitted: false
+
     }
   },
   methods: {
     async verifyOTP () {
       const params = this.$route.query.email
-      try {
-        const URL = 'http://localhost:4200/api/auth/verify-email'
+      if (this.otp === '' || this.otp.trim() === '') {
+        this.formSubmitted = true
+      } else {
+        try {
+          const URL = 'http://localhost:4200/api/auth/verify-email'
 
-        const response = await fetch(URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: params,
-            OTP: Number(this.otp)
-          })
-        })
-
-        if (response.status === 200) {
-          this.$notify(
-            {
-              group: 'top',
-              title: 'Your email has been verified successfully. Now you can login'
+          const response = await fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
             },
-            4000
-          )
-          this.$router.push({ name: 'sign-in' })
-        } else {
+            body: JSON.stringify({
+              email: params,
+              OTP: Number(this.otp)
+            })
+          })
+
+          if (response.status === 200) {
+            this.$notify(
+              {
+                group: 'top',
+                title: 'Your email has been verified successfully. Now you can login'
+              },
+              4000
+            )
+            this.$router.push({ name: 'sign-in' })
+          } else {
+            this.$notify(
+              {
+                group: 'top',
+                title: 'Invalid OTP'
+              },
+              4000
+            )
+          }
+        } catch (error) {
           this.$notify(
             {
               group: 'top',
-              title: 'Invalid OTP'
+              title: 'Server Error!'
             },
             4000
           )
         }
-      } catch (error) {
-        this.$notify(
-          {
-            group: 'top',
-            title: 'Server Error!'
-          },
-          4000
-        )
       }
     },
     async resendAPI () {
@@ -92,12 +95,30 @@ export default {
         })
 
         if (response.status === 200) {
-          alert('Email resend Success')
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Email has been resend successfully!'
+            },
+            4000
+          )
         } else {
-          alert('Server Error')
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Server Error!'
+            },
+            4000
+          )
         }
       } catch (error) {
-        console.error('An error occurred:', error)
+        this.$notify(
+          {
+            group: 'top',
+            title: 'Server Error!'
+          },
+          4000
+        )
       }
     }
   }
@@ -133,21 +154,22 @@ input {
 
 button {
   background-color: #255384;
-    color: #fff;
-    font-size: 16px;
-    padding: 6px 40px;
-    font-weight: 400;
-    box-shadow: none;
-    border: 0;
-    line-height: 36px;
-    border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  padding: 6px 40px;
+  font-weight: 400;
+  box-shadow: none;
+  border: 0;
+  line-height: 36px;
+  border-radius: 5px;
 }
 
 button:hover {
   background-color: #1b3e63;
 }
 
-.error {
-  color: red;
+.validate {
+  border: 1px solid red !important;
 }
+
 </style>

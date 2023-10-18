@@ -20,7 +20,7 @@
                 <input
                   v-model="formData.password"
                   type="password"
-                  class="form-control"
+                  :class="fieldErrors.password ? 'form-control validate' : 'form-control'"
                 >
               </div>
             </div>
@@ -30,7 +30,7 @@
                 <input
                   v-model="formData.confirmPassword"
                   type="password"
-                  class="form-control"
+                  :class="fieldErrors.confirmPassword ? 'form-control validate' : 'form-control'"
                 >
               </div>
             </div>
@@ -61,42 +61,75 @@ export default {
       formData: {
         password: '',
         confirmPassword: ''
-      }
+      },
+      fieldErrors: {}
+
     }
   },
 
   methods: {
     async submitForm () {
-      try {
-        const URL = 'http://localhost:4200/api/auth/set-new-password'
-        const query = this.$route.query
+      this.fieldErrors = {} // Clear previous errors
+
+      for (const field in this.formData) {
+        if (this.formData[field] === '' || this.formData[field].trim() === '') {
+          this.fieldErrors[field] = true
+        }
+      } if (Object.keys(this.fieldErrors).length > 0) {
+
+      } else {
         const payload = this.formData
+        try {
+          if (payload.password !== payload.confirmPassword) {
+            this.$notify(
+              {
+                group: 'top',
+                title: 'Passwords do not match'
+              },
+              4000
+            )
+          } else {
+            const URL = 'http://localhost:4200/api/auth/set-new-password'
+            const query = this.$route.query
 
-        const response = await fetch(URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: query.email,
-            password: payload.password
-          })
-        })
+            const response = await fetch(URL, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                email: query.email,
+                password: payload.password
+              })
+            })
 
-        if (response.ok) {
-          await response.json()
+            if (response.ok) {
+              this.$notify(
+                {
+                  group: 'top',
+                  title: 'Password has been updated successfully'
+                },
+                4000
+              )
+            } else {
+              this.$notify(
+                {
+                  group: 'top',
+                  title: 'Server Error'
+                },
+                4000
+              )
+            }
+          }
+        } catch (error) {
           this.$notify(
             {
               group: 'top',
-              title: 'Password has been updated successfully'
+              title: 'Server Error'
             },
             4000
           )
-        } else {
-          console.error('failed:', response.statusText)
         }
-      } catch (error) {
-        console.error('An error occurred:', error)
       }
     }
 
@@ -219,5 +252,9 @@ button.continue {
 
 .login-page .already a {
   color: #3568e5;
+}
+
+.validate {
+  border: 1px solid red !important;
 }
 </style>
