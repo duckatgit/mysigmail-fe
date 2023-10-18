@@ -87,7 +87,7 @@ export default {
         if (payload.email === '' || payload.email.trim() === '') {
           this.formSubmitted = true
         } else {
-          const URL = 'http://localhost:4200/api/auth/forgot-password'
+          const URL = 'http://54.226.37.64:8000/api/auth/forgot-password'
 
           const response = await fetch(URL, {
             method: 'POST',

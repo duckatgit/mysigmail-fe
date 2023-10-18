@@ -37,7 +37,7 @@ export default {
         this.formSubmitted = true
       } else {
         try {
-          const URL = 'http://localhost:4200/api/auth/verify-email'
+          const URL = 'http://54.226.37.64:8000/api/auth/verify-email'
 
           const response = await fetch(URL, {
             method: 'POST',
@@ -82,7 +82,7 @@ export default {
     async resendAPI () {
       const params = this.$route.query.email
       try {
-        const URL = 'http://localhost:4200/api/auth/resend-verify-email'
+        const URL = 'http://54.226.37.64:8000/api/auth/resend-verify-email'
 
         const response = await fetch(URL, {
           method: 'POST',

@@ -89,7 +89,7 @@ export default {
               4000
             )
           } else {
-            const URL = 'http://localhost:4200/api/auth/set-new-password'
+            const URL = 'http://54.226.37.64:8000/api/auth/set-new-password'
             const query = this.$route.query
 
             const response = await fetch(URL, {

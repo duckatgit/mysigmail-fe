@@ -104,7 +104,7 @@ export default {
 
       } else {
         try {
-          const URL = 'http://localhost:4200/api/auth/sign-in'
+          const URL = 'http://54.226.37.64:8000/api/auth/sign-in'
           const payload = this.formData
 
           const response = await fetch(URL, {

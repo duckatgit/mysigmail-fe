@@ -38,10 +38,6 @@
     "vue-svg-loader": "^0.11.0",
     "vue-template-compiler": "^2.5.17"
   },
-  "gitHooks": {
-    "pre-commit": "lint-staged",
-    "commit-msg": "node scripts/verify-commit.js"
-  },
   "lint-staged": {
     "*.js": [
       "vue-cli-service lint",

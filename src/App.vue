@@ -91,7 +91,7 @@ export default {
     const currentPath = window.location.pathname
     if (currentPath.includes('dashboard')) {
       try {
-        const URL = 'http://localhost:4200/api/auth/validate-token'
+        const URL = 'http://54.226.37.64:8000/api/auth/validate-token'
 
         const response = await fetch(URL, {
           method: 'POST',
