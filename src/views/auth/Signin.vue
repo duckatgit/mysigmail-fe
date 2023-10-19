@@ -52,6 +52,7 @@
                 class="continue"
                 mat-raised-button
                 color="primary"
+                style="cursor: pointer;"
               >Login</button>
             </div>
           </form>
@@ -64,7 +65,6 @@
               Don't have an account?
               <router-link
                 to="/sign-up"
-                class="sidebar__nav-item"
               >Create Account</router-link>
 
             </p>

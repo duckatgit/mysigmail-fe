@@ -20,6 +20,13 @@
                 type="text"
                 :class="fieldErrors.firstName ? 'form-control validate' : 'form-control'"
               >
+              <div
+                v-if="firstNameLengthError"
+                style="margin-top: 2px;"
+              >
+                <span style="color: rgb(236, 22, 22); font-size: 12px;"> First name must contains atleast 3
+                characters</span>
+              </div>
             </div>
 
             <div class="form-group mb-b">
@@ -27,7 +34,7 @@
               <input
                 v-model="formData.lastName"
                 type="text"
-                :class="fieldErrors.lastName ? 'form-control validate' : 'form-control'"
+                class="form-control"
               >
             </div>
 
@@ -48,6 +55,13 @@
                   type="password"
                   :class="fieldErrors.password ? 'form-control validate' : 'form-control'"
                 >
+              </div>
+              <div
+                v-if="passwordLengthError"
+                style="margin-top: 2px;"
+              >
+                <span style="color: rgb(236, 22, 22); font-size: 12px;"> Password must contains atleast 8
+                characters</span>
               </div>
             </div>
 
@@ -79,6 +93,7 @@
                 class="continue"
                 mat-raised-button
                 color="primary"
+                style="cursor: pointer;"
               >Register</button>
             </div>
           </form>
@@ -89,10 +104,7 @@
           >
             <p>
               Already have an account?
-              <router-link
-                to="/sign-in"
-                class="sidebar__nav-item"
-              >Login</router-link>
+              <router-link to="/sign-in">Login</router-link>
 
             </p>
           </div>
@@ -116,61 +128,70 @@ export default {
         password: '',
         gender: ''
       },
-      fieldErrors: {}
+      fieldErrors: {},
+      passwordLengthError: false,
+      firstNameLengthError: false
     }
   },
 
   methods: {
     async submitForm () {
-      this.fieldErrors = {} // Clear previous errors
+      this.fieldErrors = {}
+      this.firstNameLengthError = false
+      this.passwordLengthError = false
 
+      // Validate form fields
       for (const field in this.formData) {
-        if (this.formData[field] === '' || this.formData[field].trim() === '') {
-          this.fieldErrors[field] = true
+        if (field !== 'lastName') {
+          const value = this.formData[field].trim()
+          if (value === '') {
+            this.fieldErrors[field] = true
+          } else if (field === 'firstName' && value.length < 3) {
+            this.firstNameLengthError = true
+          } else if (field === 'password' && value.length < 8) {
+            this.passwordLengthError = true
+          }
         }
       }
-      if (Object.keys(this.fieldErrors).length > 0) {
 
-      } else {
-        try {
-          const URL = 'http://localhost:4200/api/auth/sign-up'
-          const payload = this.formData
+      // Check for validation errors
+      if (Object.keys(this.fieldErrors).length > 0 || this.firstNameLengthError || this.passwordLengthError) {
+        return
+      }
 
-          const response = await fetch(URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              firstName: payload.firstName,
-              lastName: payload.lastName,
-              gender: payload.gender,
-              email: payload.email,
-              password: payload.password
-            })
-          })
-          const result = await response.json()
-
-          if (response.status === 200) {
-            this.$router.push({ name: 'verify-email', query: { email: payload.email } })
-          } else {
-            this.$notify(
-              {
-                group: 'top',
-                title: result.data
-              },
-              4000
-            )
-          }
-        } catch (error) {
-          this.$notify(
-            {
-              group: 'top',
-              title: 'Server Error!'
-            },
-            4000
-          )
+      try {
+        const URL = 'http://localhost:4200/api/auth/sign-up'
+        const payload = {
+          firstName: this.formData.firstName,
+          lastName: this.formData.lastName,
+          gender: this.formData.gender,
+          email: this.formData.email,
+          password: this.formData.password
         }
+
+        const response = await fetch(URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+
+        const result = await response.json()
+
+        if (response.status === 200) {
+          this.$router.push({ name: 'verify-email', query: { email: payload.email } })
+        } else {
+          this.$notify({
+            group: 'top',
+            title: result.data
+          }, 4000)
+        }
+      } catch (error) {
+        this.$notify({
+          group: 'top',
+          title: 'Server Error!'
+        }, 4000)
       }
     }
 

@@ -15,7 +15,10 @@
           style="color: #007bff; cursor: pointer;"
           @click="resendAPI"
         > Didn't Get Email? Resend</p>
-        <button @click="verifyOTP">Verify</button>
+        <button
+          style="cursor: pointer;"
+          @click="verifyOTP"
+        >Verify</button>
       </div>
     </div>
   </div>
@@ -60,6 +63,8 @@ export default {
             )
             this.$router.push({ name: 'sign-in' })
           } else {
+            this.formSubmitted = true
+
             this.$notify(
               {
                 group: 'top',

@@ -18,7 +18,7 @@
               <label>Email Address</label>
               <input
                 v-model="formData.email"
-                type="text"
+                type="email"
                 :class="{ 'form-control': true, 'validate': formSubmitted }"
               >
             </div>
@@ -43,6 +43,7 @@
                 class="continue"
                 mat-raised-button
                 color="primary"
+                style="cursor: pointer;"
               >Submit</button>
             </div>
           </form>
@@ -54,7 +55,6 @@
             <p>
               <router-link
                 to="/sign-in"
-                class="sidebar__nav-item"
               >Back to login</router-link>
 
             </p>

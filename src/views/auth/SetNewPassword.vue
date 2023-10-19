@@ -41,6 +41,7 @@
                 class="continue"
                 mat-raised-button
                 color="primary"
+                style="cursor: pointer;"
               >Submit</button>
             </div>
           </form>
