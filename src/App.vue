@@ -91,7 +91,9 @@ export default {
     const currentPath = window.location.pathname
     if (currentPath.includes('dashboard')) {
       try {
-        const URL = 'http://localhost:4200/api/auth/validate-token'
+        const baseURL = process.env.VUE_APP_API_BASE_URL
+
+        const URL = `${baseURL}/auth/validate-token`
 
         const response = await fetch(URL, {
           method: 'POST',

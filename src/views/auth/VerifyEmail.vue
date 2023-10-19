@@ -40,7 +40,9 @@ export default {
         this.formSubmitted = true
       } else {
         try {
-          const URL = 'http://localhost:4200/api/auth/verify-email'
+          const baseURL = process.env.VUE_APP_API_BASE_URL
+
+          const URL = `${baseURL}/api/auth/verify-email`
 
           const response = await fetch(URL, {
             method: 'POST',
@@ -87,7 +89,9 @@ export default {
     async resendAPI () {
       const params = this.$route.query.email
       try {
-        const URL = 'http://localhost:4200/api/auth/resend-verify-email'
+        const baseURL = process.env.VUE_APP_API_BASE_URL
+
+        const URL = `${baseURL}/auth/resend-verify-email`
 
         const response = await fetch(URL, {
           method: 'POST',

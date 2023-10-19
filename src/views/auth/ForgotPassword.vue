@@ -87,7 +87,8 @@ export default {
         if (payload.email === '' || payload.email.trim() === '') {
           this.formSubmitted = true
         } else {
-          const URL = 'http://localhost:4200/api/auth/forgot-password'
+          const baseURL = process.env.VUE_APP_API_BASE_URL
+          const URL = `${baseURL}/auth/forgot-password`
 
           const response = await fetch(URL, {
             method: 'POST',

@@ -160,7 +160,8 @@ export default {
       }
 
       try {
-        const URL = 'http://localhost:4200/api/auth/sign-up'
+        const baseURL = process.env.VUE_APP_API_BASE_URL
+        const URL = `${baseURL}/auth/sign-up`
         const payload = {
           firstName: this.formData.firstName,
           lastName: this.formData.lastName,

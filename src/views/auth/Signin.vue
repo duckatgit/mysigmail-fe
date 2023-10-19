@@ -104,7 +104,11 @@ export default {
 
       } else {
         try {
-          const URL = 'http://localhost:4200/api/auth/sign-in'
+          const baseURL = process.env.VUE_APP_API_BASE_URL
+
+          console.log(baseURL)
+
+          const URL = `${baseURL}/auth/sign-in`
           const payload = this.formData
 
           const response = await fetch(URL, {

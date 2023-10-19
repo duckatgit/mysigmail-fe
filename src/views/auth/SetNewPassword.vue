@@ -90,7 +90,9 @@ export default {
               4000
             )
           } else {
-            const URL = 'http://localhost:4200/api/auth/set-new-password'
+            const baseURL = process.env.VUE_APP_API_BASE_URL
+
+            const URL = `${baseURL}/auth/set-new-password`
             const query = this.$route.query
 
             const response = await fetch(URL, {
