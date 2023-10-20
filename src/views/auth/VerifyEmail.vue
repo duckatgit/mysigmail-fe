@@ -8,7 +8,7 @@
           v-model="otp"
           type="text"
           placeholder="Enter OTP"
-          :class="{'validate': formSubmitted }"
+          :class="{ 'validate': formSubmitted }"
         >
 
         <p
@@ -55,6 +55,8 @@ export default {
             })
           })
 
+          const result = await response.json()
+
           if (response.status === 200) {
             this.$notify(
               {
@@ -70,7 +72,7 @@ export default {
             this.$notify(
               {
                 group: 'top',
-                title: 'Invalid OTP'
+                title: result.data
               },
               4000
             )
@@ -180,5 +182,4 @@ button:hover {
 .validate {
   border: 1px solid red !important;
 }
-
 </style>

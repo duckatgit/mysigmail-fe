@@ -105,8 +105,11 @@ export default {
                 password: payload.password
               })
             })
+            const result = await response.json()
 
             if (response.ok) {
+              this.$router.push({ path: '/sign-in' })
+
               this.$notify(
                 {
                   group: 'top',
@@ -118,7 +121,7 @@ export default {
               this.$notify(
                 {
                   group: 'top',
-                  title: 'Server Error'
+                  title: result.data
                 },
                 4000
               )
