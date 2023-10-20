@@ -106,8 +106,6 @@ export default {
         try {
           const baseURL = process.env.VUE_APP_API_BASE_URL
 
-          console.log(baseURL)
-
           const URL = `${baseURL}/auth/sign-in`
           const payload = this.formData
 

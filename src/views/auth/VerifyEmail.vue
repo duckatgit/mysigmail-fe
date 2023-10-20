@@ -42,7 +42,7 @@ export default {
         try {
           const baseURL = process.env.VUE_APP_API_BASE_URL
 
-          const URL = `${baseURL}/api/auth/verify-email`
+          const URL = `${baseURL}/auth/verify-email`
 
           const response = await fetch(URL, {
             method: 'POST',
