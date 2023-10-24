@@ -78,6 +78,10 @@
             type="primary"
             @click="copyHTML"
           >Copy as HTML</el-button>
+          <el-button
+            size="small"
+            @click="sourceSelect"
+          >Sources</el-button>
         </el-button-group>
         <br>
         <el-popover
@@ -92,7 +96,8 @@
           <h3>Basic usage:</h3>
           <p>Click on "Copy as HTML" button and paste snippet of your signature into your email client settings.</p>
           <h3>Advance usage:</h3>
-          <p>For some email clients, like gmail, you may using simply copy/paste highlight selection. Click on "Copy as Select" button and paste of your signature into your email client settings.</p>
+          <p>For some email clients, like gmail, you may using simply copy/paste highlight selection. Click on "Copy as
+          Select" button and paste of your signature into your email client settings.</p>
         </el-popover>
       </div>
       <textarea
@@ -140,6 +145,59 @@
       </div>
     </el-dialog>
     <success-promo :show.sync="showSuccessPromo" />
+    <div>
+      <el-dialog
+        ref="modal"
+        class="success-promo-modal"
+        :visible="sourceSelectModal"
+        :before-close="handleCloseDialog"
+      >
+
+        <div class="success-promo">
+          <div class="mailIcons">
+            <span
+              style="cursor: pointer;"
+              @click="copySelect"
+            >
+
+              <img
+                ref="cropper"
+                :src="gmailIcon"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              >
+            </span>
+            <span
+              style="cursor: pointer;"
+              @click="copySelect"
+            >
+
+              <img
+                ref="cropper"
+                :src="outlook"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              >
+            </span>
+            <span
+              style="cursor: pointer;"
+              @click="copySelect"
+            >
+
+              <img
+                ref="cropper"
+                :src="yahoo"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              >
+            </span>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -149,6 +207,9 @@ import CarbonAd from './CarbonAd'
 import GithubIcon from '../assets/image/github.svg'
 import SuccessPromo from './SuccessPromo'
 import Donate from './Donate'
+import gmailIcon from '../assets/img/gmail-icon-free-png.png'
+import outlook from '../assets/img/outlook.png'
+import yahoo from '../assets/img/yahoo.png'
 
 export default {
   name: 'Preview',
@@ -158,6 +219,7 @@ export default {
     GithubIcon,
     SuccessPromo,
     Donate
+
   },
 
   data () {
@@ -165,7 +227,11 @@ export default {
       html: '',
       showSource: false,
       showSuccessPromo: false,
-      version: require('../../package.json').version
+      sourceSelectModal: false,
+      version: require('../../package.json').version,
+      gmailIcon,
+      outlook,
+      yahoo
     }
   },
 
@@ -197,6 +263,9 @@ export default {
     parseHTML () {
       return this.$refs.template.$el.outerHTML.replace(/<!---->/g, '')
     },
+    sourceSelect () {
+      this.sourceSelectModal = true
+    },
     copyHTML () {
       this.$refs.html.innerHTML = this.parseHTML()
       this.$refs.html.select()
@@ -226,6 +295,9 @@ export default {
       this.gaEventClick('copy source')
       this.showSource = false
       this.showSuccessPromo = true
+    },
+    handleCloseDialog () {
+      this.sourceSelectModal = false
     }
   }
 }
@@ -236,69 +308,94 @@ export default {
 
 $padding-inner: 40px 50px 20px 50px;
 
+.mailIcons span {
+  margin: 4px;
+}
+
+.mailIcons span img {
+  border: 1px solid rgb(230, 229, 229);
+  padding: 1px;
+}
+
 .preview {
   background-color: #f6f6f6;
   overflow-y: auto;
   display: grid;
   grid-template-rows: 1fr 50px;
+
   &__header {
     margin-bottom: 20px;
   }
+
   &__inner {
     max-width: 900px;
     padding: $padding-inner;
   }
+
   &__footer {
     max-width: 900px;
     text-align: right;
     align-self: flex-end;
     padding: $padding-inner;
   }
+
   h2 {
     line-height: 0;
   }
+
   p {
     margin: 0;
   }
+
   .actions {
     text-align: right;
     margin-top: 20px;
   }
 }
+
 .email {
   min-height: 350px;
   width: 100%;
   background: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
   &-content {
     padding: 20px;
+
     p {
       line-height: 1.5em;
       margin-bottom: 10px;
       font-size: 13px;
     }
+
     .line {
       height: 10px;
       background-color: #eee;
       margin: 10px 0;
       border-radius: 2px;
+
       &.short {
         width: 30%;
       }
+
       &.long {
         width: 90%;
       }
+
       &.half {
         width: 50%;
       }
+
       &.full {
         width: 100%;
       }
     }
+
     .flex {
       display: flex;
       width: 100%;
       margin-bottom: -10px;
+
       .column-1 {
         .line {
           &:first-of-type {
@@ -306,22 +403,27 @@ $padding-inner: 40px 50px 20px 50px;
           }
         }
       }
+
       .column-1,
       .column-2 {
         flex-grow: 1;
       }
+
       .column-1 {
         width: 100%;
       }
+
       .column-2 {
         flex-shrink: 0;
         min-width: 320px;
       }
     }
   }
+
   &-preview {
     padding: 20px;
   }
+
   .placeholder {
     height: 100px;
     width: 100px;
@@ -330,28 +432,34 @@ $padding-inner: 40px 50px 20px 50px;
     font-size: 0;
   }
 }
+
 .setup-instruction {
   font-size: 12px;
 }
+
 .dialog-actions {
   text-align: right;
   margin-top: 20px;
 }
+
 .version {
   color: #aaa;
   margin-top: 10px;
   font-size: 12px;
+
   a {
     color: #aaa;
   }
+
   span {
-    + span {
+    +span {
       &::before {
         content: "•";
         padding: 0 5px;
       }
     }
   }
+
   svg {
     width: 20px;
     position: relative;
@@ -359,6 +467,7 @@ $padding-inner: 40px 50px 20px 50px;
     transition: all 0.2s;
   }
 }
+
 .link {
   text-decoration: underline;
   color: $color-primary;
