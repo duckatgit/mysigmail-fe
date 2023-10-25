@@ -21,7 +21,9 @@
       <div v-if="currentPathname === '/set-new-password'">
         <SetNewPassword />
       </div>
-
+      <div v-if="currentPathname === '/faq'">
+        <FAQ />
+      </div>
     </div>
     <div
       v-if="currentPathname.includes('dashboard')"
@@ -32,7 +34,6 @@
       <sidebar />
       <config-panel />
       <preview />
-
     </div>
   </div>
 </template>
@@ -48,6 +49,7 @@ import VerifyEmail from './views/auth/VerifyEmail.vue'
 import Signin from './views/auth/Signin.vue'
 import ForgotPassword from './views/auth/ForgotPassword.vue'
 import SetNewPassword from './views/auth/SetNewPassword.vue'
+import FAQ from './views/FAQ.vue'
 
 import Vue from 'vue'
 import Notifications from 'vt-notifications'
@@ -63,7 +65,8 @@ export default {
     VerifyEmail,
     Signin,
     ForgotPassword,
-    SetNewPassword
+    SetNewPassword,
+    FAQ
   },
 
   data () {

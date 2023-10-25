@@ -23,7 +23,9 @@
               <el-option
                 value="-1"
                 disabled
-              >Soon more templates</el-option>
+              >
+                Soon more templates
+              </el-option>
             </el-select>
           </el-col>
         </el-row>
@@ -67,21 +69,29 @@
             size="small"
             type
             @click="viewSource"
-          >View source</el-button>
+          >
+            View source
+          </el-button>
           <el-button
             size="small"
             @click="copySelect"
-          >Copy as Select</el-button>
+          >
+            Copy as Select
+          </el-button>
           <el-button
             ref="copyHTML"
             size="small"
             type="primary"
             @click="copyHTML"
-          >Copy as HTML</el-button>
+          >
+            Copy as HTML
+          </el-button>
           <el-button
             size="small"
             @click="sourceSelect"
-          >Sources</el-button>
+          >
+            Sources
+          </el-button>
         </el-button-group>
         <br>
         <el-popover
@@ -92,12 +102,16 @@
             slot="reference"
             size="small"
             type="text"
-          >Show setup instruction</el-button>
+          >
+            Show setup instruction
+          </el-button>
           <h3>Basic usage:</h3>
           <p>Click on "Copy as HTML" button and paste snippet of your signature into your email client settings.</p>
           <h3>Advance usage:</h3>
-          <p>For some email clients, like gmail, you may using simply copy/paste highlight selection. Click on "Copy as
-          Select" button and paste of your signature into your email client settings.</p>
+          <p>
+            For some email clients, like gmail, you may using simply copy/paste highlight selection. Click on "Copy as
+            Select" button and paste of your signature into your email client settings.
+          </p>
         </el-popover>
       </div>
       <textarea
@@ -141,7 +155,9 @@
         <el-button
           type="primary"
           @click="copySource"
-        >Copy</el-button>
+        >
+          Copy
+        </el-button>
       </div>
     </el-dialog>
     <success-promo :show.sync="showSuccessPromo" />
@@ -151,8 +167,8 @@
         class="success-promo-modal"
         :visible="sourceSelectModal"
         :before-close="handleCloseDialog"
+        title="Copy Signature for:"
       >
-
         <div class="success-promo">
           <div class="mailIcons">
             <span
@@ -194,6 +210,19 @@
                 width="40"
               >
             </span>
+            <span
+              style="cursor: pointer;"
+              @click="copySelect"
+            >
+
+              <img
+                ref="cropper"
+                :src="appleMail"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              >
+            </span>
           </div>
         </div>
       </el-dialog>
@@ -210,6 +239,7 @@ import Donate from './Donate'
 import gmailIcon from '../assets/img/gmail-icon-free-png.png'
 import outlook from '../assets/img/outlook.png'
 import yahoo from '../assets/img/yahoo.png'
+import appleMail from '../assets/img/appleMail.png'
 
 export default {
   name: 'Preview',
@@ -231,7 +261,8 @@ export default {
       version: require('../../package.json').version,
       gmailIcon,
       outlook,
-      yahoo
+      yahoo,
+      appleMail
     }
   },
 
@@ -311,10 +342,19 @@ $padding-inner: 40px 50px 20px 50px;
 .mailIcons span {
   margin: 4px;
 }
+.el-dialog__title{
+  font-size: 16px !important;
+}
 
-.mailIcons span img {
-  border: 1px solid rgb(230, 229, 229);
+.mailIcons span img{
+  border-radius: 50%;
   padding: 1px;
+  border: 1px solid rgb(255, 255, 255);
+
+}
+
+.mailIcons span img:hover {
+  border: 1px solid rgb(210, 210, 210);
 }
 
 .preview {

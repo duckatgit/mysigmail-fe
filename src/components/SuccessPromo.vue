@@ -9,6 +9,14 @@
       <h1>🎉 Hooray 🎉</h1>
       <h2>Your signature successfully created and copied!</h2>
       <br>
+      <!-- <div style="font-size: 12px;">
+        <h3>
+          Wana know its operational working? <span>
+            <button
+              @click="handleFAQ"
+            > Click here</button></span>
+        </h3>
+      </div> -->
       <p>Please tell about us 😇🙏</p>
       <social-sharing
         inline-template
@@ -85,6 +93,11 @@ export default {
     this.$root.$on('social_shares_open', (payload) => {
       this.gaEventClick(`social ${payload}`)
     })
+  },
+  methods: {
+    handleFAQ () {
+      this.$router.push({ path: '/faq' })
+    }
   }
 }
 </script>
@@ -102,68 +115,82 @@ export default {
   border: 1px solid #ddd;
   cursor: pointer;
   margin: 0 5px;
+
   svg {
     transition: all .2s;
   }
+
   &--fb {
     &:hover {
       svg {
-          fill: lighten(#3b5998, 15%);
-        }
+        fill: lighten(#3b5998, 15%);
       }
+    }
+
     svg {
       fill: #3b5998;
     }
   }
+
   &--vk {
-     &:hover {
+    &:hover {
       svg {
-          fill: lighten(#45668e, 15%);
-        }
+        fill: lighten(#45668e, 15%);
       }
+    }
+
     svg {
       fill: #45668e;
     }
   }
+
   &--tw {
     &:hover {
       svg {
-          fill: darken(#1da1f2, 10%);
-        }
+        fill: darken(#1da1f2, 10%);
       }
+    }
+
     svg {
       fill: #1da1f2;
     }
   }
+
   &--reddit {
     &:hover {
       svg {
-          fill: darken(#ff4500, 10%);
-        }
+        fill: darken(#ff4500, 10%);
       }
+    }
+
     svg {
       fill: #ff4500;
     }
   }
+
   &--telegram {
     &:hover {
       svg {
-          fill: lighten(#0088cc, 10%);
-        }
+        fill: lighten(#0088cc, 10%);
       }
+    }
+
     svg {
       fill: #0088cc;
     }
   }
 }
+
 .success-promo {
   text-align: center;
 }
+
 .success-promo-modal {
   .el-dialog {
     &__header {
       padding-bottom: 0;
     }
+
     h1 {
       margin-top: 0;
     }
