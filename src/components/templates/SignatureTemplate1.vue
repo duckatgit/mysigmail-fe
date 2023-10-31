@@ -13,7 +13,7 @@
           <td style="vertical-align: top;">
             <avatar
               :show-avatar="showAvatar"
-              :src="image"
+              :src="imageUrl"
               :size="options.avatar.size"
               :roundness="options.avatar.roundness"
             />
@@ -235,6 +235,11 @@ export default {
     PromoteSignature,
     BannerPlaceholder
   },
-  extends: EmailTemplate
+  extends: EmailTemplate,
+  computed: {
+    imageUrl () {
+      return this.$store.getters.imageUrl
+    }
+  }
 }
 </script>

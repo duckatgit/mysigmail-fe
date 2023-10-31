@@ -1,72 +1,51 @@
 <template>
   <div class="row">
     <div class="banner-side">
-      <img
-        :src="SigninBanner"
-        height="520"
-        width="520"
-        style="margin-left: 80px;"
-      >
+      <img :src="SigninBanner" height="520" width="520" style="margin-left: 80px;">
     </div>
     <div class="login-page">
       <div class="auth-card">
         <div class="login-container">
-          <h2 class="heading-login-text text-center">Login</h2>
+          <h2 class="heading-login-text text-center">
+            Login
+          </h2>
           <form @submit.prevent="submitForm">
-
             <div class="form-group mb-b">
               <label>Email Address</label>
-              <input
-                v-model="formData.email"
-                type="email"
-                :class="fieldErrors.email ? 'form-control validate' : 'form-control'"
-              >
+              <input v-model="formData.email" type="email"
+                :class="fieldErrors.email ? 'form-control validate' : 'form-control'">
             </div>
 
             <div class="form-group mb-b">
               <label>Password</label>
               <div class="position-relative">
-                <input
-                  v-model="formData.password"
-                  type="password"
-                  :class="fieldErrors.password ? 'form-control validate' : 'form-control'"
-                >
+                <input v-model="formData.password" type="password"
+                  :class="fieldErrors.password ? 'form-control validate' : 'form-control'">
               </div>
             </div>
 
             <div class="forgot">
-
-              <router-link to="/forgot-password">Forgot Password?</router-link>
-
+              <router-link to="/forgot-password">
+                Forgot Password?
+              </router-link>
             </div>
 
-            <div
-              class="d-flex forget-password"
-              style="justify-content: space-between"
-            >
+            <div class="d-flex forget-password" style="justify-content: space-between">
               <!-- <p><a href="#">Forgot Password?</a></p> -->
             </div>
             <div class="text-center">
-              <button
-                type="submit"
-                class="continue"
-                mat-raised-button
-                color="primary"
-                style="cursor: pointer;"
-              >Login</button>
+              <button type="submit" class="continue" mat-raised-button color="primary" style="cursor: pointer;">
+                Login
+              </button>
             </div>
           </form>
 
-          <div
-            class="already text-center"
-            style="margin-top: 16px"
-          >
+          <div class="already text-center" style="margin-top: 16px">
             <p>
               Don't have an account?
-              <router-link
-                to="/sign-up"
-              >Create Account</router-link>
-
+              <router-link to="/sign-up">
+                Create Account
+              </router-link>
             </p>
           </div>
         </div>
@@ -79,7 +58,7 @@
 import SigninBanner from '../../assets/img/signin-banner.png'
 
 export default {
-  data () {
+  data() {
     return {
       SigninBanner,
       formData: {
@@ -92,7 +71,7 @@ export default {
   },
 
   methods: {
-    async submitForm () {
+    async submitForm() {
       this.fieldErrors = {} // Clear previous errors
 
       for (const field in this.formData) {
@@ -131,6 +110,7 @@ export default {
             )
             this.$router.push({ path: '/dashboard/basic' })
             localStorage.setItem('token', result.data.user.token)
+            localStorage.setItem('userId', result.data.user.userId)
           } else {
             this.$notify(
               {

@@ -68,7 +68,7 @@ export function saveProject (data, asCurrent) {
         ...data
       }
     }
-
+    console.log(data, 'data')
     const save = store.put(data)
 
     save.onsuccess = e => {

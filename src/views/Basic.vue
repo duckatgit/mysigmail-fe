@@ -5,12 +5,13 @@
         <div class="image-preview-wrapper">
           <div
             class="image-preview"
-            :style="{'background-image': `url(${imageUrl})` }"
+            :style="{ 'background-image': `url(${imageUrl})` }"
           />
           <div class="image-preview__actions">
             <upload
               :crop-width="200"
               :crop-height="200"
+              :get-sign-details="getSignDetails"
               @upload="onUpload"
             />
             <el-row :gutter="20">
@@ -23,7 +24,9 @@
                 />
               </el-col>
               <el-col :span="8">
-                <el-button @click="onAddLink">Add link</el-button>
+                <el-button @click="onAddLink">
+                  Save link
+                </el-button>
               </el-col>
             </el-row>
             <div class="desc">
@@ -49,7 +52,9 @@
           type="primary"
           style="width: 100%;"
           @click="onAddField"
-        >Add custom field</el-button>
+        >
+          Add custom field
+        </el-button>
       </el-form-item>
     </el-form>
     <!-- Add new field dialog -->
@@ -98,7 +103,9 @@
           <el-button
             type="primary"
             @click="addField"
-          >Add field</el-button>
+          >
+            Add field
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -126,27 +133,49 @@ export default {
       filedType: 'text',
       imageLink: '',
       showDialog: false,
-      showAlert: false
+      showAlert: false,
+      imageUrl: ''
     }
   },
 
   computed: {
-    ...mapState(['attributes', 'basic']),
-    imageUrl: {
-      get () {
-        return this.basic.image.link
-      },
-      set (v) {
-        this.$store.dispatch('updateImage', { link: v })
-      }
-    }
+    ...mapState(['attributes', 'basic'])
+    // imageUrl: {
+    //   // get () {
+    //   //   return this.basic.image.link
+    //   // }
+    //   // set (v) {
+    //   //   this.$store.dispatch('updateImage', { link: v })
+    //   // }
+    // }
   },
 
   created () {
     this.$ga.page(this.$router)
   },
+  async mounted () {
+    this.getSignDetails()
+  },
 
   methods: {
+    async getSignDetails () {
+      try {
+        const baseURL = process.env.VUE_APP_API_BASE_URL
+        const userId = localStorage.getItem('userId')
+        const URL = `${baseURL}/signature/get-sign-details/${userId}`
+
+        const response = await fetch(URL)
+        if (response.status === 200) {
+          const result = await response.json()
+          this.imageUrl = result.data.imgURL
+          this.$store.dispatch('setImageUrl', result.data.imgURL)
+        } else {
+          console.error('An error occurred:')
+        }
+      } catch (error) {
+        console.error('An error occurred:', error)
+      }
+    },
     addField () {
       const newFiled = {
         name: this.fieldName,
@@ -166,8 +195,40 @@ export default {
         this.$refs.fieldName.focus()
       })
     },
-    onAddLink () {
-      this.$store.dispatch('updateImage', { link: this.imageUrl })
+    async onAddLink () {
+      try {
+        const baseURL = process.env.VUE_APP_API_BASE_URL
+        const userId = localStorage.getItem('userId')
+        const URL = `${baseURL}/signature/update-img-link/${userId}`
+
+        const response = await fetch(URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            imageLink: this.imageUrl
+          })
+        })
+        if (response.status === 200) {
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Image updated successfully'
+            },
+            4000
+          )
+          this.getSignDetails()
+
+          const result = await response.json()
+          this.imageUrl = result.data.imgURL
+        } else {
+          console.error('An error occurred:')
+        }
+      } catch (error) {
+        console.error('An error occurred:', error)
+      }
+      // this.$store.dispatch('updateImage', { link: this.imageUrl })
     },
     onClearImageLink () {
       this.imageLink = ''
@@ -186,6 +247,7 @@ export default {
 .image-preview-wrapper {
   display: flex;
   margin-top: 20px;
+
   .image-preview {
     margin-right: 30px;
     width: 100px;
@@ -197,21 +259,26 @@ export default {
     background-size: cover;
     flex-shrink: 0;
     overflow: hidden;
+
     &__actions {
       width: 100%;
+
       .upload {
         margin-bottom: 20px;
       }
     }
   }
+
   .remove-image {
     padding: 10px;
     cursor: pointer;
+
     &:hover {
       i {
         color: #909399;
       }
     }
+
     i {
       color: #c0c4cc;
     }
@@ -220,37 +287,45 @@ export default {
   .el-button {
     height: 40px;
   }
+
   .el-upload {
     display: inline-block;
     margin-bottom: 20px;
   }
 }
+
 .remove-field {
   display: inline-block;
   cursor: pointer;
 }
+
 .edit {
   i {
     color: $color-primary;
   }
+
   &:hover {
     i {
       color: darken($color-primary, 20%);
     }
   }
 }
+
 .delete {
   i {
     color: red;
   }
+
   &:hover {
     i {
       color: darken(red, 20%);
     }
   }
 }
+
 .image-tips {
   border-bottom: 1px dashed;
+
   .el-popover__reference {
     cursor: pointer;
   }

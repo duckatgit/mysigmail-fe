@@ -3,9 +3,11 @@
     <el-button
       class="upload__btn"
       @click="openCropDialog"
-    >Upload image</el-button>
+    >
+      Upload image
+    </el-button>
     <el-dialog
-      title="Upload and crop image"
+      title="Upload image"
       :visible.sync="showCropDialog"
     >
       <div class="crop-preview-wrapper">
@@ -29,6 +31,7 @@
         :multiple="false"
         :show-file-list="false"
         :auto-upload="false"
+        @submit.prevent
       >
         <div slot="trigger">
           <button
@@ -45,20 +48,47 @@
             size="mini"
             @change="changeAspectRation"
           >
-            <el-radio-button :label="1">1:1</el-radio-button>
-            <el-radio-button :label="4 / 3">4:3</el-radio-button>
-            <el-radio-button :label="2 / 3">2:3</el-radio-button>
-            <el-radio-button :label="16 / 9">16:9</el-radio-button>
-            <el-radio-button :label="NaN">Free</el-radio-button>
+            <el-radio-button :label="1">
+              1:1
+            </el-radio-button>
+            <el-radio-button :label="4 / 3">
+              4:3
+            </el-radio-button>
+            <el-radio-button :label="2 / 3">
+              2:3
+            </el-radio-button>
+            <el-radio-button :label="16 / 9">
+              16:9
+            </el-radio-button>
+            <el-radio-button :label="NaN">
+              Free
+            </el-radio-button>
           </el-radio-group>
         </div>
         <div class="upload-action">
-          <el-button @click="$refs.uploadButton.click()">Select image</el-button>
-          <el-button
-            v-if="cropPreview"
-            type="success"
-            @click="onUpload"
-          >Save</el-button>
+          <!-- <el-button @click.prevent="$refs.uploadButton.click()">
+            Select image
+          </el-button> -->
+          <label for="img">Select image:</label>
+          <input
+            id="img"
+            type="file"
+            name="img"
+            accept="image/*"
+            @change="handleFileSelect"
+          >
+          <div>
+            <button
+              style="background-color: #409eff;
+  color: #fff; padding: 5px; width: 80px;"
+              @click.prevent="uploadToAWS"
+            >
+              Save
+            </button>
+          </div>
+          <!-- <el-button v-if="cropPreview" type="success" @click="onUpload">
+            Save
+          </el-button> -->
         </div>
       </el-upload>
     </el-dialog>
@@ -86,7 +116,12 @@ export default {
     quality: {
       type: Number,
       default: 0.9
+    },
+    getSignDetails: {
+      type: Function
+
     }
+
   },
 
   data () {
@@ -94,7 +129,8 @@ export default {
       fileRaw: '',
       showCropDialog: false,
       cropper: undefined,
-      aspectRatio: NaN
+      aspectRatio: NaN,
+      selectedFile: null
     }
   },
 
@@ -107,6 +143,63 @@ export default {
   },
 
   methods: {
+    async uploadToAWS () {
+      try {
+        if (this.selectedFile) {
+          const userId = localStorage.getItem('userId')
+          const baseURL = process.env.VUE_APP_API_BASE_URL
+          const URL = `${baseURL}/signature/upload-img/${userId}`
+
+          const formData = new FormData()
+          formData.append('image', this.selectedFile)
+
+          const response = await fetch(URL, {
+            method: 'POST',
+            body: formData
+          })
+          const result = await response.json()
+
+          if (response.ok) {
+            this.$notify(
+              {
+                group: 'top',
+                title: 'Image uploaded successfully'
+              },
+              4000
+            )
+            this.showCropDialog = false
+            this.getSignDetails()
+          } else {
+            this.$notify(
+              {
+                group: 'top',
+                title: result.data
+              },
+              4000
+            )
+          }
+        } else {
+          this.$notify(
+            {
+              group: 'top',
+              title: 'Please select image'
+            },
+            4000
+          )
+        }
+      } catch (error) {
+        this.$notify(
+          {
+            group: 'top',
+            title: 'Server Error!'
+          },
+          4000
+        )
+      }
+    },
+    handleFileSelect (input) {
+      this.selectedFile = event.target.files[0]
+    },
     onBeforeUpload (file) {
       this.checkUploadedFile(file)
     },
@@ -127,9 +220,9 @@ export default {
     },
     async onChange (file, fileList) {
       try {
-        await this.checkUploadedFile(file.raw)
-        this.fileRaw = file.raw
-        this.initCropper()
+        // await this.checkUploadedFile(file.raw)
+        // this.fileRaw = file.raw
+        // this.initCropper()
       } catch (err) {
         console.error(err)
       }
@@ -211,16 +304,19 @@ export default {
 @import '../assets/scss/variables.scss';
 
 .crop-preview-wrapper {
-   overflow: hidden;
-   padding-bottom: 5px;
+  overflow: hidden;
+  padding-bottom: 5px;
 }
+
 .crop-preview {
   padding: 2px 0;
   max-height: 250px;
   padding-bottom: 20px;
+
   img {
-     max-width: 100%;
+    max-width: 100%;
   }
+
   &__placeholder {
     width: 100%;
     height: 200px;
@@ -229,9 +325,12 @@ export default {
     border-radius: 3px;
   }
 }
-.upload-action, .aspect-ratio-buttons {
+
+.upload-action,
+.aspect-ratio-buttons {
   text-align: center;
 }
+
 .aspect-ratio-buttons {
   margin-bottom: 10px;
 }

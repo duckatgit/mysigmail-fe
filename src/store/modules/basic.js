@@ -5,12 +5,17 @@ export default {
     image: {
       link: ''
     },
+    imageUrl: null,
     fields: mainFields.basic
   },
   getters: {
-    getBasic: state => state
+    imageUrl: (state) => state.imageUrl,
+    getBasic: (state) => state
   },
   mutations: {
+    setImageUrl (state, imageUrl) {
+      state.imageUrl = imageUrl
+    },
     ADD_BASIC_FIELD (state, data) {
       state.fields.push(data)
     },
@@ -32,6 +37,9 @@ export default {
     }
   },
   actions: {
+    setImageUrl ({ commit }, imageUrl) {
+      commit('setImageUrl', imageUrl)
+    },
     async addField ({ commit, dispatch, rootState }, data) {
       commit('ADD_BASIC_FIELD', data)
       await dispatch('updateProject', rootState.projects.project)

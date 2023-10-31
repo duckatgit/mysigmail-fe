@@ -83,12 +83,16 @@
       <el-button
         size="small"
         @click="onImportProject"
-      >Import project</el-button>
+      >
+        Import project
+      </el-button>
       <el-button
         size="small"
         type="success"
         @click="onNew"
-      >New project</el-button>
+      >
+        New project
+      </el-button>
       <input
         ref="fileInput"
         style="display: none;"
