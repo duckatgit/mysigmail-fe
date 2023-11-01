@@ -1,81 +1,58 @@
 <template>
-  <div class="preview">
+  <div class="preview" :class="{ highlight: active }">
     <div class="preview__inner">
       <div class="preview__header">
-        <el-row>
+        <el-button size="small" @click="toggleClass"> Preview </el-button>
+        <el-button size="small" @click="openGmail"> Gmail </el-button>
+        <el-row class="signRow">
           <el-col :span="12">
             <h2>Signature preview</h2>
           </el-col>
-          <el-col
-            :span="12"
-            style="text-align: right;"
-          >
-            <el-select
-              v-model="selectTemplate"
-              placeholder="Select template"
-            >
+          <!-- <el-col :span="12" style="text-align: right" class="hiddensign">
+            <el-select v-model="selectTemplate" placeholder="Select template">
               <el-option
                 v-for="item in template.list"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
               />
-              <el-option
-                value="-1"
-                disabled
-              >
-                Soon more templates
-              </el-option>
+              <el-option value="-1" disabled> Soon more templates </el-option>
             </el-select>
-          </el-col>
+          </el-col> -->
         </el-row>
       </div>
-      <div class="email">
-        <div class="email-content">
-          <div
-            class="line short"
-            style="margin-bottom: 30px;"
-          />
-          <div class="flex">
-            <div class="column-1">
-              <div class="line long full" />
-              <div class="line long full" />
-              <div class="line long full" />
-              <div class="line long full" />
-              <div class="line long full" />
-              <div class="line long full" />
+      <div class="email-div">
+        <div class="email">
+          <div class="email-content">
+            <div class="line short" style="margin-bottom: 30px" />
+            <div class="flex">
+              <div class="column-1">
+                <div class="line long full" />
+                <div class="line long full" />
+                <div class="line long full" />
+                <div class="line long full" />
+                <div class="line long full" />
+                <div class="line long full" />
+              </div>
+              <div class="column-2">
+                <carbon-ad v-if="isProd" />
+              </div>
             </div>
-            <div class="column-2">
-              <carbon-ad v-if="isProd" />
-            </div>
+            <div class="line long" />
+            <div class="line long full" />
+            <div class="line long full" />
           </div>
-          <div class="line long" />
-          <div class="line long full" />
-          <div class="line long full" />
-        </div>
-        <div
-          ref="preview"
-          class="email-preview"
-        >
-          <component
-            :is="signatureTemplate"
-            ref="template"
-          />
+          <div ref="preview" class="email-preview">
+            <component :is="signatureTemplate" ref="template" />
+          </div>
         </div>
       </div>
       <div class="actions">
         <el-button-group>
-          <el-button
-            size="small"
-            type
-            @click="viewSource"
-          >
+          <el-button size="small" type @click="viewSource">
             View source
           </el-button>
-          <el-button
-            size="small"
-            @click="copySelect"
-          >
+          <el-button size="small" @click="copySelect">
             Copy as Select
           </el-button>
           <el-button
@@ -86,38 +63,27 @@
           >
             Copy as HTML
           </el-button>
-          <el-button
-            size="small"
-            @click="sourceSelect"
-          >
-            Sources
-          </el-button>
+          <el-button size="small" @click="sourceSelect"> Sources </el-button>
         </el-button-group>
-        <br>
-        <el-popover
-          placement="top"
-          width="260"
-        >
-          <el-button
-            slot="reference"
-            size="small"
-            type="text"
-          >
+        <br />
+        <el-popover placement="top" width="260">
+          <el-button slot="reference" size="small" type="text">
             Show setup instruction
           </el-button>
           <h3>Basic usage:</h3>
-          <p>Click on "Copy as HTML" button and paste snippet of your signature into your email client settings.</p>
+          <p>
+            Click on "Copy as HTML" button and paste snippet of your signature
+            into your email client settings.
+          </p>
           <h3>Advance usage:</h3>
           <p>
-            For some email clients, like gmail, you may using simply copy/paste highlight selection. Click on "Copy as
-            Select" button and paste of your signature into your email client settings.
+            For some email clients, like gmail, you may using simply copy/paste
+            highlight selection. Click on "Copy as Select" button and paste of
+            your signature into your email client settings.
           </p>
         </el-popover>
       </div>
-      <textarea
-        ref="html"
-        style="opacity: 0"
-      />
+      <textarea ref="html" style="opacity: 0" />
     </div>
     <div class="preview__footer">
       <div class="preview__footer-inner">
@@ -136,92 +102,108 @@
         </div>
       </div>
     </div>
-    <el-dialog
-      title="Your email signature"
-      :visible.sync="showSource"
-    >
+    <el-dialog title="Your email signature" :visible.sync="showSource">
       <p>Copy the HTML code below and paste it to your signature file</p>
-      <br>
-      <el-input
-        ref="dialogSource"
-        v-model="html"
-        type="textarea"
-        :rows="10"
-      />
-      <div
-        style="text-align: right;"
-        class="dialog-actions"
-      >
-        <el-button
-          type="primary"
-          @click="copySource"
-        >
-          Copy
-        </el-button>
+      <br />
+      <el-input ref="dialogSource" v-model="html" type="textarea" :rows="10" />
+      <div style="text-align: right" class="dialog-actions">
+        <el-button type="primary" @click="copySource"> Copy </el-button>
       </div>
     </el-dialog>
     <success-promo :show.sync="showSuccessPromo" />
+    <google-template :show.sync="showGooglePromo" />
     <div>
       <el-dialog
         ref="modal"
         class="success-promo-modal"
-        :visible="sourceSelectModal"
         :before-close="handleCloseDialog"
         title="Copy Signature for:"
       >
         <div class="success-promo">
           <div class="mailIcons">
-            <span
-              style="cursor: pointer;"
-              @click="copySelect"
-            >
-
+            <span style="cursor: pointer" @click="copySelect">
               <img
                 ref="cropper"
                 :src="gmailIcon"
                 alt="crop-preview"
                 height="40"
                 width="40"
-              >
+              />
             </span>
-            <span
-              style="cursor: pointer;"
-              @click="copySelect"
-            >
-
+            <span style="cursor: pointer" @click="copySelect">
               <img
                 ref="cropper"
                 :src="outlook"
                 alt="crop-preview"
                 height="40"
                 width="40"
-              >
+              />
             </span>
-            <span
-              style="cursor: pointer;"
-              @click="copySelect"
-            >
-
+            <span style="cursor: pointer" @click="copySelect">
               <img
                 ref="cropper"
                 :src="yahoo"
                 alt="crop-preview"
                 height="40"
                 width="40"
-              >
+              />
             </span>
-            <span
-              style="cursor: pointer;"
-              @click="copySelect"
-            >
-
+            <span style="cursor: pointer" @click="copySelect">
               <img
                 ref="cropper"
                 :src="appleMail"
                 alt="crop-preview"
                 height="40"
                 width="40"
-              >
+              />
+            </span>
+          </div>
+        </div>
+      </el-dialog>
+      <el-dialog
+        ref="modal"
+        class="google-promo-modal"
+        :visible="sourceSelectModal"
+        :before-close="handleCloseDialog"
+        title="Copy Signature for:"
+      >
+        <div class="google-promo">
+          <div class="mailIcons">
+            <span style="cursor: pointer" @click="copySelect">
+              <img
+                ref="cropper"
+                :src="gmailIcon"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              />
+            </span>
+            <span style="cursor: pointer" @click="copySelect">
+              <img
+                ref="cropper"
+                :src="outlook"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              />
+            </span>
+            <span style="cursor: pointer" @click="copySelect">
+              <img
+                ref="cropper"
+                :src="yahoo"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              />
+            </span>
+            <span style="cursor: pointer" @click="copySelect">
+              <img
+                ref="cropper"
+                :src="appleMail"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              />
             </span>
           </div>
         </div>
@@ -231,107 +213,122 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
-import CarbonAd from './CarbonAd'
-import GithubIcon from '../assets/image/github.svg'
-import SuccessPromo from './SuccessPromo'
-import Donate from './Donate'
-import gmailIcon from '../assets/img/gmail-icon-free-png.png'
-import outlook from '../assets/img/outlook.png'
-import yahoo from '../assets/img/yahoo.png'
-import appleMail from '../assets/img/appleMail.png'
+import { mapGetters, mapState } from "vuex";
+import CarbonAd from "./CarbonAd";
+import GithubIcon from "../assets/image/github.svg";
+import SuccessPromo from "./SuccessPromo";
+import GoogleTemplate from "./GoogleTemplate";
+import Donate from "./Donate";
+import gmailIcon from "../assets/img/gmail-icon-free-png.png";
+import outlook from "../assets/img/outlook.png";
+import yahoo from "../assets/img/yahoo.png";
+import appleMail from "../assets/img/appleMail.png";
 
 export default {
-  name: 'Preview',
+  name: "Preview",
 
   components: {
     CarbonAd,
     GithubIcon,
     SuccessPromo,
-    Donate
-
+    GoogleTemplate,
+    Donate,
   },
 
-  data () {
+  data() {
     return {
-      html: '',
+      html: "",
       showSource: false,
       showSuccessPromo: false,
+      showGooglePromo: false,
       sourceSelectModal: false,
-      version: require('../../package.json').version,
+      version: require("../../package.json").version,
       gmailIcon,
       outlook,
       yahoo,
-      appleMail
-    }
+      appleMail,
+      active: false,
+    };
   },
 
   computed: {
-    ...mapState(['template']),
+    ...mapState(["template"]),
     ...mapGetters({
-      basic: 'getBasic',
-      options: 'getOptions',
-      template: 'getTemplate'
+      basic: "getBasic",
+      options: "getOptions",
+      template: "getTemplate",
     }),
-    signatureTemplate () {
-      const template = this.template.selected
-      return () => import(`./templates/${template}`)
+    signatureTemplate() {
+      const template = this.template.selected;
+      return () => import(`./templates/${template}`);
     },
     selectTemplate: {
-      get () {
-        return this.template.selected
+      get() {
+        return this.template.selected;
       },
-      set (v) {
-        this.$store.dispatch('updateTemplate', v)
-      }
+      set(v) {
+        this.$store.dispatch("updateTemplate", v);
+      },
     },
-    isProd () {
-      return process.env.NODE_ENV === 'production'
-    }
+    isProd() {
+      return process.env.NODE_ENV === "production";
+    },
   },
 
   methods: {
-    parseHTML () {
-      return this.$refs.template.$el.outerHTML.replace(/<!---->/g, '')
+    parseHTML() {
+      return this.$refs.template.$el.outerHTML.replace(/<!---->/g, "");
     },
-    sourceSelect () {
-      this.sourceSelectModal = true
+    toggleClass() {
+      this.active = !this.active; // Toggle the class when the button is clicked
     },
-    copyHTML () {
-      this.$refs.html.innerHTML = this.parseHTML()
-      this.$refs.html.select()
-      document.execCommand('copy')
-      this.gaEventClick('copy as HTML')
-      this.showSuccessPromo = true
+    openGmail() {
+      this.showGooglePromo = true;
+      this.$refs.html.innerHTML = this.parseHTML();
+      this.$refs.html.select();
+      document.execCommand("copy");
+      this.gaEventClick("Gmail");
     },
-    copySelect () {
+    sourceSelect() {
+      this.sourceSelectModal = true;
+    },
+    copyHTML() {
+      this.$refs.html.innerHTML = this.parseHTML();
+      this.$refs.html.select();
+      document.execCommand("copy");
+      this.gaEventClick("copy as HTML");
+      this.showSuccessPromo = true;
+    },
+    copySelect() {
       if (window.getSelection) {
-        let range = document.createRange()
-        range.selectNode(this.$refs.preview.querySelector('.email-preview div'))
-        window.getSelection().removeAllRanges()
-        window.getSelection().addRange(range)
-        document.execCommand('copy')
-        this.gaEventClick('copy as select')
-        this.showSuccessPromo = true
+        let range = document.createRange();
+        range.selectNode(
+          this.$refs.preview.querySelector(".email-preview div")
+        );
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+        this.gaEventClick("copy as select");
+        this.showSuccessPromo = true;
       }
     },
-    viewSource () {
-      this.html = this.parseHTML()
-      this.showSource = true
-      this.gaEventClick('view source')
+    viewSource() {
+      this.html = this.parseHTML();
+      this.showSource = true;
+      this.gaEventClick("view source");
     },
-    copySource () {
-      this.$refs.dialogSource.select()
-      document.execCommand('copy')
-      this.gaEventClick('copy source')
-      this.showSource = false
-      this.showSuccessPromo = true
+    copySource() {
+      this.$refs.dialogSource.select();
+      document.execCommand("copy");
+      this.gaEventClick("copy source");
+      this.showSource = false;
+      this.showSuccessPromo = true;
     },
-    handleCloseDialog () {
-      this.sourceSelectModal = false
-    }
-  }
-}
+    handleCloseDialog() {
+      this.sourceSelectModal = false;
+    },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -342,15 +339,14 @@ $padding-inner: 40px 50px 20px 50px;
 .mailIcons span {
   margin: 4px;
 }
-.el-dialog__title{
+.el-dialog__title {
   font-size: 16px !important;
 }
 
-.mailIcons span img{
+.mailIcons span img {
   border-radius: 50%;
   padding: 1px;
   border: 1px solid rgb(255, 255, 255);
-
 }
 
 .mailIcons span img:hover {
@@ -492,7 +488,7 @@ $padding-inner: 40px 50px 20px 50px;
   }
 
   span {
-    +span {
+    + span {
       &::before {
         content: "•";
         padding: 0 5px;
@@ -512,5 +508,19 @@ $padding-inner: 40px 50px 20px 50px;
   text-decoration: underline;
   color: $color-primary;
   cursor: pointer;
+}
+
+.highlight .email {
+  width: 50%;
+}
+// .highlight .signRow.el-row {
+//   display: flex;
+//   width: 50%;
+//   flex-direction: column;
+// }
+.highlight .email-div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 </style>
