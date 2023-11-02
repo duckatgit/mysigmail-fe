@@ -111,7 +111,7 @@
       </div>
     </el-dialog>
     <success-promo :show.sync="showSuccessPromo" />
-    <google-template :show.sync="showGooglePromo" />
+    <google-template :show.sync="showGooglePromo" :html-content="html" />
     <div>
       <el-dialog
         ref="modal"
@@ -285,6 +285,8 @@ export default {
     openGmail() {
       this.showGooglePromo = true;
       this.$refs.html.innerHTML = this.parseHTML();
+      this.html = this.parseHTML();
+      this.$refs.googleTemplate.setHtmlContent(htmlContent);
       this.$refs.html.select();
       document.execCommand("copy");
       this.gaEventClick("Gmail");

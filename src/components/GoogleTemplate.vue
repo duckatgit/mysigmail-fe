@@ -8,8 +8,8 @@
     <div class="google-promo">
       <h1>Please Enter your Email</h1>
       <div class="EmailBox">
-        <input type="email" class="emailInput" />
-        <el-button size="small" class="sendBtn" @click="toggleClass">
+        <input type="email" class="emailInput" v-model="email" />
+        <el-button size="small" class="sendBtn" @click="sendEmail">
           Send
         </el-button>
       </div>
@@ -22,10 +22,21 @@
 export default {
   name: "GoogleTemplate",
 
+  data() {
+    return {
+      email: "", // Holds the email value entered by the user
+      isValidEmail: false,
+    };
+  },
+
   props: {
     show: {
       type: Boolean,
       default: false,
+    },
+    htmlContent: {
+      type: String,
+      default: "",
     },
   },
 
@@ -35,6 +46,68 @@ export default {
     });
   },
   methods: {
+    validateEmail(email) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailPattern.test(email);
+    },
+    async sendEmail() {
+      const userEmail = this.email;
+      this.isValidEmail = this.validateEmail(userEmail);
+
+      if (this.isValidEmail) {
+        this.htmlContent =
+          "<br/><br/><br/><br/><br/><br/><br/>" + this.htmlContent;
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const URL = `${baseURL}/upload/sendTemplate`;
+        const data = {
+          email: userEmail,
+          emailTemplate: this.htmlContent,
+        };
+
+        try {
+          const response = await fetch(URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            this.$notify(
+              {
+                group: "top",
+                title: "Email Sent successfully",
+              },
+              4000
+            );
+            this.showCropDialog = false;
+          } else {
+            const errorResult = await response.json();
+            this.$notify(
+              {
+                group: "top",
+                title: errorResult.data,
+              },
+              4000
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          this.$notify(
+            {
+              group: "top",
+              title: "An error occurred while sending the email",
+            },
+            4000
+          );
+        }
+      } else {
+        console.log("not a valid email");
+      }
+    },
+
     handleFAQ() {
       this.$router.push({ path: "/faq" });
     },
