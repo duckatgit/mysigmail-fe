@@ -82,7 +82,7 @@ export default {
               },
               4000
             );
-            this.showCropDialog = false;
+            this.$refs.modal && (this.$refs.modal.visible = false);
           } else {
             const errorResult = await response.json();
             this.$notify(
