@@ -104,7 +104,13 @@ export default {
           );
         }
       } else {
-        console.log("not a valid email");
+        this.$notify(
+          {
+            group: "top",
+            title: "not a valid email",
+          },
+          4000
+        );
       }
     },
 
