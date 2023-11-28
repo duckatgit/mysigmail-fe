@@ -52,7 +52,7 @@
           <el-button size="small" type @click="viewSource">
             View source
           </el-button>
-          <el-button size="small" @click="copySelect">
+          <el-button size="small" @click="copySelected">
             Copy as Select
           </el-button>
           <el-button
@@ -205,6 +205,15 @@
                 width="40"
               />
             </span>
+            <span style="cursor: pointer" @click="sendGsuite">
+              <img
+                ref="cropper"
+                :src="gsuite"
+                alt="crop-preview"
+                height="40"
+                width="40"
+              />
+            </span>
           </div>
         </div>
       </el-dialog>
@@ -223,6 +232,7 @@ import gmailIcon from "../assets/img/gmail-icon-free-png.png";
 import outlook from "../assets/img/outlook.png";
 import yahoo from "../assets/img/yahoo.png";
 import appleMail from "../assets/img/appleMail.png";
+import gsuite from "../assets/img/gsuite.png";
 
 export default {
   name: "Preview",
@@ -247,7 +257,9 @@ export default {
       outlook,
       yahoo,
       appleMail,
+      gsuite,
       active: false,
+      htmlStructure: "",
     };
   },
 
@@ -274,8 +286,58 @@ export default {
       return process.env.NODE_ENV === "production";
     },
   },
+  watch: {
+    "$route.query.code": {
+      immediate: true, // Trigger the handler immediately on component creation
+      handler(newCode, oldCode) {
+        if (newCode) {
+          this.fetchHtmlStructure();
+        }
+      },
+    },
+  },
 
   methods: {
+    async fetchHtmlStructure() {
+      try {
+        // Call the computed property as a method and wait for the Promise to resolve
+        const SignatureComponent = await this.signatureTemplate();
+        // Wait for the next DOM update
+        await this.$nextTick();
+
+        const htmlStructures = this.parseHTML();
+        this.htmlStructure = htmlStructures;
+        this.sendToGoogle(this.htmlStructure);
+      } catch (error) {
+        console.error("Error fetching signature template:", error);
+      }
+    },
+    async sendToGoogle(structure) {
+      try {
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const codeParam = this.$route.query.code;
+
+        const response = await fetch(`${baseURL}/upload/signatureCallback`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            structure,
+            codeParam,
+          }),
+        });
+
+        if (response.status === 200) {
+          const result = await response.json();
+          // Handle the result as needed
+        } else {
+          console.error("An error occurred:", response.statusText);
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    },
     parseHTML() {
       return this.$refs.template.$el.outerHTML.replace(/<!---->/g, "");
     },
@@ -292,6 +354,10 @@ export default {
       this.gaEventClick("Gmail");
     },
     sourceSelect() {
+      this.$refs.html.innerHTML = this.parseHTML();
+      this.$refs.html.select();
+      document.execCommand("copy");
+      this.gaEventClick("copy as HTML");
       this.sourceSelectModal = true;
     },
     copyHTML() {
@@ -301,7 +367,42 @@ export default {
       this.gaEventClick("copy as HTML");
       this.showSuccessPromo = true;
     },
+    async sendGsuite() {
+      try {
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const URL = `${baseURL}/upload/sendSignatureTemplateDemo`;
+
+        const response = await fetch(URL, {
+          method: "POST",
+        });
+
+        if (response.status === 200) {
+          console.log(response);
+          const result = await response.json();
+          window.open(result.url, "_blank");
+          // Process the result
+        } else {
+          console.error("An error occurred:", response.status);
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    },
     copySelect() {
+      if (window.getSelection) {
+        this.$router.push({ path: "/faq" });
+        let range = document.createRange();
+        range.selectNode(
+          this.$refs.preview.querySelector(".email-preview div")
+        );
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+        this.gaEventClick("copy as select");
+        this.showSuccessPromo = true;
+      }
+    },
+    copySelected() {
       if (window.getSelection) {
         let range = document.createRange();
         range.selectNode(
