@@ -1,26 +1,41 @@
 <template>
   <div class="row">
     <div class="banner-side">
-      <img :src="SigninBanner" height="520" width="520" style="margin-left: 80px;">
+      <img
+        :src="SigninBanner"
+        height="520"
+        width="520"
+        style="margin-left: 80px"
+      />
     </div>
     <div class="login-page">
       <div class="auth-card">
         <div class="login-container">
-          <h2 class="heading-login-text text-center">
-            Login
-          </h2>
+          <h2 class="heading-login-text text-center">Login</h2>
           <form @submit.prevent="submitForm">
             <div class="form-group mb-b">
               <label>Email Address</label>
-              <input v-model="formData.email" type="email"
-                :class="fieldErrors.email ? 'form-control validate' : 'form-control'">
+              <input
+                v-model="formData.email"
+                type="email"
+                :class="
+                  fieldErrors.email ? 'form-control validate' : 'form-control'
+                "
+              />
             </div>
 
             <div class="form-group mb-b">
               <label>Password</label>
               <div class="position-relative">
-                <input v-model="formData.password" type="password"
-                  :class="fieldErrors.password ? 'form-control validate' : 'form-control'">
+                <input
+                  v-model="formData.password"
+                  type="password"
+                  :class="
+                    fieldErrors.password
+                      ? 'form-control validate'
+                      : 'form-control'
+                  "
+                />
               </div>
             </div>
 
@@ -30,11 +45,20 @@
               </router-link>
             </div>
 
-            <div class="d-flex forget-password" style="justify-content: space-between">
+            <div
+              class="d-flex forget-password"
+              style="justify-content: space-between"
+            >
               <!-- <p><a href="#">Forgot Password?</a></p> -->
             </div>
             <div class="text-center">
-              <button type="submit" class="continue" mat-raised-button color="primary" style="cursor: pointer;">
+              <button
+                type="submit"
+                class="continue"
+                mat-raised-button
+                color="primary"
+                style="cursor: pointer"
+              >
                 Login
               </button>
             </div>
@@ -43,9 +67,7 @@
           <div class="already text-center" style="margin-top: 16px">
             <p>
               Don't have an account?
-              <router-link to="/sign-up">
-                Create Account
-              </router-link>
+              <router-link to="/sign-up"> Create Account </router-link>
             </p>
           </div>
         </div>
@@ -55,85 +77,82 @@
 </template>
 
 <script>
-import SigninBanner from '../../assets/img/signin-banner.png'
+import SigninBanner from "../../assets/img/signin-banner.png";
 
 export default {
   data() {
     return {
       SigninBanner,
       formData: {
-        email: '',
-        password: ''
+        email: "",
+        password: "",
       },
-      fieldErrors: {}
-
-    }
+      fieldErrors: {},
+    };
   },
 
   methods: {
     async submitForm() {
-      this.fieldErrors = {} // Clear previous errors
+      this.fieldErrors = {}; // Clear previous errors
 
       for (const field in this.formData) {
-        if (this.formData[field] === '' || this.formData[field].trim() === '') {
-          this.fieldErrors[field] = true
+        if (this.formData[field] === "" || this.formData[field].trim() === "") {
+          this.fieldErrors[field] = true;
         }
       }
       if (Object.keys(this.fieldErrors).length > 0) {
-
       } else {
         try {
-          const baseURL = process.env.VUE_APP_API_BASE_URL
+          const baseURL = process.env.VUE_APP_API_BASE_URL;
 
-          const URL = `${baseURL}/auth/sign-in`
-          const payload = this.formData
+          const URL = `${baseURL}/auth/sign-in`;
+          const payload = this.formData;
 
+          const EncryptData = btoa(payload.email + ":" + payload.password);
           const response = await fetch(URL, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json'
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              email: payload.email,
-              password: payload.password
-            })
-          })
-          const result = await response.json()
+              data: EncryptData,
+            }),
+          });
+          const result = await response.json();
 
           if (response.ok) {
             this.$notify(
               {
-                group: 'top',
-                title: 'Logged in successfully'
+                group: "top",
+                title: "Logged in successfully",
               },
               4000
-            )
-            this.$router.push({ path: '/dashboard/basic' })
-            localStorage.setItem('token', result.data.user.token)
-            localStorage.setItem('userId', result.data.user.userId)
+            );
+            this.$router.push({ path: "/dashboard/basic" });
+            localStorage.setItem("token", result.data.user.token);
+            localStorage.setItem("userId", result.data.user.userId);
           } else {
             this.$notify(
               {
-                group: 'top',
-                title: result.data
+                group: "top",
+                title: result.data,
               },
               4000
-            )
+            );
           }
         } catch (error) {
           this.$notify(
             {
-              group: 'top',
-              title: 'Server Error!'
+              group: "top",
+              title: "Server Error!",
             },
             4000
-          )
+          );
         }
       }
-    }
-
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -200,7 +219,7 @@ h2.heading-login-text {
   background: #f6f6f6;
   height: 45px !important;
   padding: 13px 10px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -217,7 +236,6 @@ input.form-control {
   font-size: 13px;
   font-weight: 500;
   color: #3568e5 !important;
-
 }
 
 .forget-password a {
