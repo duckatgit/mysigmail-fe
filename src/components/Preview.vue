@@ -319,12 +319,8 @@ export default {
     async fetchHtmlStructure() {
       try {
         // Call the computed property as a method and wait for the Promise to resolve
-        const SignatureComponent = await this.signatureTemplate();
-        // Wait for the next DOM update
-        await this.$nextTick();
-
-        const htmlStructures = this.parseHTML();
-        this.htmlStructure = htmlStructures;
+        const renderedHtml = this.$refs.template.$el.outerHTML;
+        this.htmlStructure = renderedHtml;
         this.sendToGoogle(this.htmlStructure);
       } catch (error) {
         console.error("Error fetching signature template:", error);
@@ -338,7 +334,7 @@ export default {
           this.$refs.html.innerHTML = this.parseHTML();
           this.html = this.parseHTML();
           const isGoogle = localStorage.getItem("localData");
-          console.log(structure);
+          console.log("google", this.html);
 
           const response = await fetch(`${baseURL}/upload/signatureCallback`, {
             method: "POST",
