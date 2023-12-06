@@ -1,43 +1,43 @@
-import { guid } from '../util/helpers'
+import { guid } from "../util/helpers";
 
 const fields = {
-  basic: []
-}
+  basic: [],
+};
 
-function seed () {
+function seed() {
   const basic = [
-    { name: 'Full name', type: 'text', value: '' },
-    { name: 'Job title', type: 'text', value: '' },
-    { name: 'Company', type: 'text', value: '' },
-    { name: 'Website', type: 'link', value: '' },
-    { name: 'Email', type: 'email', value: '' },
-    { name: 'Phone', type: 'text', value: '' }
-  ]
+    { name: "Full name", type: "text", value: "" },
+    { name: "Job title", type: "text", value: "" },
+    { name: "Company", type: "text", value: "" },
+    { name: "Website", type: "link", value: "" },
+    { name: "Email", type: "email", value: "" },
+    { name: "Phone", type: "text", value: "" },
+  ];
 
-  basic.forEach(item => {
-    fields.basic.push({ ...item, id: guid() })
-  })
+  basic.forEach((item) => {
+    fields.basic.push({ ...item, id: guid() });
+  });
 
-  addPlaceholder()
+  addPlaceholder();
 }
 
-function addPlaceholder () {
+function addPlaceholder() {
   const placeholders = [
-    'John Doe',
-    'Frontend developer',
-    'JohnDoe LLC',
-    'johndoe.com',
-    'mail@jonhdoe.com',
-    '+ 1 123 456 7890'
-  ]
+    "John Doe",
+    "Frontend developer",
+    "JohnDoe LLC",
+    "johndoe.com",
+    "mail@jonhdoe.com",
+    "+ 1 123 456 7890",
+  ];
 
   fields.basicPlaceholder = [
     ...fields.basic.map((item, index) => {
-      return { ...item, value: placeholders[index] }
-    })
-  ]
+      return { ...item, value: placeholders[index] };
+    }),
+  ];
 }
 
-seed()
+seed();
 
-export default fields
+export default fields;

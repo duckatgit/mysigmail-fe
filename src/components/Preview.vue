@@ -205,7 +205,7 @@
                 width="40"
               />
             </span>
-            <span style="cursor: pointer" @click="sendGsuite">
+            <span style="cursor: pointer" @click="sendToGoogle">
               <img
                 ref="cropper"
                 :src="gsuite"
@@ -233,6 +233,7 @@ import outlook from "../assets/img/outlook.png";
 import yahoo from "../assets/img/yahoo.png";
 import appleMail from "../assets/img/appleMail.png";
 import gsuite from "../assets/img/gsuite.png";
+import { EventBus } from "../util/EventBus";
 
 export default {
   name: "Preview",
@@ -260,6 +261,8 @@ export default {
       gsuite,
       active: false,
       htmlStructure: "",
+      userName: "",
+      codeHead: false,
     };
   },
 
@@ -291,10 +294,25 @@ export default {
       immediate: true, // Trigger the handler immediately on component creation
       handler(newCode, oldCode) {
         if (newCode) {
-          this.fetchHtmlStructure();
+          const isGoogle = localStorage.getItem("localData");
+          if (isGoogle == "local") {
+            console.log("donees");
+            this.codeHead = true;
+            this.fetchHtmlStructure();
+          }
         }
       },
     },
+  },
+  mounted() {
+    const currentPath = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+    console.log(currentPath, "dess");
+    console.log(code, "dess");
+    if (code) {
+      this.codeHead = true;
+    }
   },
 
   methods: {
@@ -314,25 +332,53 @@ export default {
     },
     async sendToGoogle(structure) {
       try {
-        const baseURL = process.env.VUE_APP_API_BASE_URL;
-        const codeParam = this.$route.query.code;
+        if (this.codeHead == true) {
+          const baseURL = process.env.VUE_APP_API_BASE_URL;
+          const codeParam = this.$route.query.code;
+          this.$refs.html.innerHTML = this.parseHTML();
+          this.html = this.parseHTML();
+          const isGoogle = localStorage.getItem("localData");
+          console.log(structure);
 
-        const response = await fetch(`${baseURL}/upload/signatureCallback`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            structure,
-            codeParam,
-          }),
-        });
-
-        if (response.status === 200) {
-          const result = await response.json();
-          // Handle the result as needed
+          const response = await fetch(`${baseURL}/upload/signatureCallback`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              structure: isGoogle === "local" ? structure : this.html,
+              codeParam,
+            }),
+          });
+          if (response.status === 200) {
+            const result = await response.json();
+            this.userName = result.userName;
+            this.sourceSelectModal = false;
+            EventBus.$emit("dataChanged", this.userName);
+            // Handle the result as needed
+          } else {
+            console.error("An error occurred:", response.statusText);
+          }
         } else {
-          console.error("An error occurred:", response.statusText);
+          try {
+            const baseURL = process.env.VUE_APP_API_BASE_URL;
+            const URL = `${baseURL}/upload/sendSignatureTemplateDemo`;
+
+            const response = await fetch(URL, {
+              method: "POST",
+            });
+
+            if (response.status === 200) {
+              console.log(response);
+              const result = await response.json();
+              window.location.href = result.url;
+              // Process the result
+            } else {
+              console.error("An error occurred:", response.status);
+            }
+          } catch (error) {
+            console.error("An error occurred:", error);
+          }
         }
       } catch (error) {
         console.error("An error occurred:", error);
@@ -368,25 +414,23 @@ export default {
       this.showSuccessPromo = true;
     },
     async sendGsuite() {
-      try {
-        const baseURL = process.env.VUE_APP_API_BASE_URL;
-        const URL = `${baseURL}/upload/sendSignatureTemplateDemo`;
-
-        const response = await fetch(URL, {
-          method: "POST",
-        });
-
-        if (response.status === 200) {
-          console.log(response);
-          const result = await response.json();
-          window.open(result.url, "_blank");
-          // Process the result
-        } else {
-          console.error("An error occurred:", response.status);
-        }
-      } catch (error) {
-        console.error("An error occurred:", error);
-      }
+      // try {
+      //   const baseURL = process.env.VUE_APP_API_BASE_URL;
+      //   const URL = `${baseURL}/upload/sendSignatureTemplateDemo`;
+      //   const response = await fetch(URL, {
+      //     method: "POST",
+      //   });
+      //   if (response.status === 200) {
+      //     console.log(response);
+      //     const result = await response.json();
+      //     window.open(result.url, "_blank");
+      //     // Process the result
+      //   } else {
+      //     console.error("An error occurred:", response.status);
+      //   }
+      // } catch (error) {
+      //   console.error("An error occurred:", error);
+      // }
     },
     copySelect() {
       if (window.getSelection) {

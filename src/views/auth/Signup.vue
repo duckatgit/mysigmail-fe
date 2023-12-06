@@ -5,8 +5,8 @@
         :src="SignupBanner"
         height="520"
         width="520"
-        style="margin-left: 80px;"
-      >
+        style="margin-left: 80px"
+      />
     </div>
     <div class="login-page">
       <div class="auth-card">
@@ -18,14 +18,16 @@
               <input
                 v-model="formData.firstName"
                 type="text"
-                :class="fieldErrors.firstName ? 'form-control validate' : 'form-control'"
-              >
-              <div
-                v-if="firstNameLengthError"
-                style="margin-top: 2px;"
-              >
-                <span style="color: rgb(236, 22, 22); font-size: 12px;"> First name must contains atleast 3
-                characters</span>
+                :class="
+                  fieldErrors.firstName
+                    ? 'form-control validate'
+                    : 'form-control'
+                "
+              />
+              <div v-if="firstNameLengthError" style="margin-top: 2px">
+                <span style="color: rgb(236, 22, 22); font-size: 12px">
+                  First name must contains atleast 3 characters</span
+                >
               </div>
             </div>
 
@@ -35,7 +37,7 @@
                 v-model="formData.lastName"
                 type="text"
                 class="form-control"
-              >
+              />
             </div>
 
             <div class="form-group mb-b">
@@ -43,8 +45,10 @@
               <input
                 v-model="formData.email"
                 type="email"
-                :class="fieldErrors.email ? 'form-control validate' : 'form-control'"
-              >
+                :class="
+                  fieldErrors.email ? 'form-control validate' : 'form-control'
+                "
+              />
             </div>
 
             <div class="form-group mb-b">
@@ -53,15 +57,17 @@
                 <input
                   v-model="formData.password"
                   type="password"
-                  :class="fieldErrors.password ? 'form-control validate' : 'form-control'"
-                >
+                  :class="
+                    fieldErrors.password
+                      ? 'form-control validate'
+                      : 'form-control'
+                  "
+                />
               </div>
-              <div
-                v-if="passwordLengthError"
-                style="margin-top: 2px;"
-              >
-                <span style="color: rgb(236, 22, 22); font-size: 12px;"> Password must contains atleast 8
-                characters</span>
+              <div v-if="passwordLengthError" style="margin-top: 2px">
+                <span style="color: rgb(236, 22, 22); font-size: 12px">
+                  Password must contains atleast 8 characters</span
+                >
               </div>
             </div>
 
@@ -69,12 +75,11 @@
               <label>Gender</label>
               <select
                 v-model="formData.gender"
-                :class="fieldErrors.gender ? 'form-control validate' : 'form-control'"
+                :class="
+                  fieldErrors.gender ? 'form-control validate' : 'form-control'
+                "
               >
-                <option
-                  value=""
-                  disabled
-                >Select Gender</option>
+                <option value="" disabled>Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
@@ -93,19 +98,29 @@
                 class="continue"
                 mat-raised-button
                 color="primary"
-                style="cursor: pointer;"
-              >Register</button>
+                style="cursor: pointer"
+              >
+                Register
+              </button>
             </div>
           </form>
 
-          <div
-            class="already text-center"
-            style="margin-top: 16px"
-          >
+          <div class="text-center googleSignup">
+            <button
+              class="continue"
+              @click="loginWithGoogle"
+              mat-raised-button
+              color="primary"
+              style="cursor: pointer"
+            >
+              SignUp With Google
+            </button>
+          </div>
+
+          <div class="already text-center" style="margin-top: 16px">
             <p>
               Already have an account?
               <router-link to="/sign-in">Login</router-link>
-
             </p>
           </div>
         </div>
@@ -115,89 +130,125 @@
 </template>
 
 <script>
-import SignupBanner from '../../assets/img/signup-banner.png'
+import SignupBanner from "../../assets/img/signup-banner.png";
 
 export default {
-  data () {
+  data() {
     return {
       SignupBanner,
       formData: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        gender: ''
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        gender: "",
       },
       fieldErrors: {},
       passwordLengthError: false,
-      firstNameLengthError: false
-    }
+      firstNameLengthError: false,
+    };
   },
 
   methods: {
-    async submitForm () {
-      this.fieldErrors = {}
-      this.firstNameLengthError = false
-      this.passwordLengthError = false
+    async loginWithGoogle() {
+      console.log("abc");
+      try {
+        localStorage.setItem("localData", "");
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const URL = `${baseURL}/upload/sendSignatureTemplateDemo`;
+
+        const response = await fetch(URL, {
+          method: "POST",
+        });
+
+        if (response.status === 200) {
+          localStorage.setItem("googleApi", "google");
+          const result = await response.json();
+          // window.open(result.url, "_blank");
+          window.location.href = result.url;
+          // Process the result
+        } else {
+          console.error("An error occurred:", response.status);
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    },
+    async submitForm() {
+      this.fieldErrors = {};
+      this.firstNameLengthError = false;
+      this.passwordLengthError = false;
 
       // Validate form fields
       for (const field in this.formData) {
-        if (field !== 'lastName') {
-          const value = this.formData[field].trim()
-          if (value === '') {
-            this.fieldErrors[field] = true
-          } else if (field === 'firstName' && value.length < 3) {
-            this.firstNameLengthError = true
-          } else if (field === 'password' && value.length < 8) {
-            this.passwordLengthError = true
+        if (field !== "lastName") {
+          const value = this.formData[field].trim();
+          if (value === "") {
+            this.fieldErrors[field] = true;
+          } else if (field === "firstName" && value.length < 3) {
+            this.firstNameLengthError = true;
+          } else if (field === "password" && value.length < 8) {
+            this.passwordLengthError = true;
           }
         }
       }
 
       // Check for validation errors
-      if (Object.keys(this.fieldErrors).length > 0 || this.firstNameLengthError || this.passwordLengthError) {
-        return
+      if (
+        Object.keys(this.fieldErrors).length > 0 ||
+        this.firstNameLengthError ||
+        this.passwordLengthError
+      ) {
+        return;
       }
 
       try {
-        const baseURL = process.env.VUE_APP_API_BASE_URL
-        const URL = `${baseURL}/auth/sign-up`
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const URL = `${baseURL}/auth/sign-up`;
         const payload = {
           firstName: this.formData.firstName,
           lastName: this.formData.lastName,
           gender: this.formData.gender,
           email: this.formData.email,
-          password: this.formData.password
-        }
+          password: this.formData.password,
+        };
 
         const response = await fetch(URL, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
-        })
+          body: JSON.stringify(payload),
+        });
 
-        const result = await response.json()
+        const result = await response.json();
 
         if (response.status === 200) {
-          this.$router.push({ name: 'verify-email', query: { email: payload.email } })
+          this.$router.push({
+            name: "verify-email",
+            query: { email: payload.email },
+          });
         } else {
-          this.$notify({
-            group: 'top',
-            title: result.data
-          }, 4000)
+          this.$notify(
+            {
+              group: "top",
+              title: result.data,
+            },
+            4000
+          );
         }
       } catch (error) {
-        this.$notify({
-          group: 'top',
-          title: 'Server Error!'
-        }, 4000)
+        this.$notify(
+          {
+            group: "top",
+            title: "Server Error!",
+          },
+          4000
+        );
       }
-    }
-
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -264,7 +315,7 @@ h2.heading-login-text {
   background: #f6f6f6;
   height: 45px !important;
   padding: 13px 10px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -310,5 +361,8 @@ button.continue {
 
 .validate {
   border: 1px solid red !important;
+}
+.googleSignup {
+  margin-top: 20px;
 }
 </style>

@@ -64,6 +64,18 @@
             </div>
           </form>
 
+          <div class="text-center googleSignup">
+            <button
+              class="continue"
+              @click="loginWithGoogle"
+              mat-raised-button
+              color="primary"
+              style="cursor: pointer"
+            >
+              Login With Google
+            </button>
+          </div>
+
           <div class="already text-center" style="margin-top: 16px">
             <p>
               Don't have an account?
@@ -92,8 +104,33 @@ export default {
   },
 
   methods: {
+    async loginWithGoogle() {
+      try {
+        localStorage.setItem("localData", "");
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const URL = `${baseURL}/upload/sendSignatureTemplateDemo`;
+
+        const response = await fetch(URL, {
+          method: "POST",
+        });
+
+        if (response.status === 200) {
+          localStorage.setItem("googleApi", "google");
+          const result = await response.json();
+          // window.open(result.url, "_blank");
+          window.location.href = result.url;
+          // Process the result
+        } else {
+          console.error("An error occurred:", response.status);
+        }
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    },
     async submitForm() {
       this.fieldErrors = {}; // Clear previous errors
+      localStorage.setItem("googleApi", "");
+      localStorage.setItem("localData", "local");
 
       for (const field in this.formData) {
         if (this.formData[field] === "" || this.formData[field].trim() === "") {
@@ -273,5 +310,9 @@ button.continue {
 
 .validate {
   border: 1px solid red !important;
+}
+
+.googleSignup {
+  margin-top: 20px;
 }
 </style>

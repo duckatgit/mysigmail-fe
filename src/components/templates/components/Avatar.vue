@@ -1,61 +1,55 @@
 <template>
   <div
     v-if="showAvatar"
-    style="margin-right: 10px;"
+    style="margin-right: 10px"
     :style="computedStyle"
-  >
-    <img
-      v-if="src"
-      :src="src"
-      :style="{
-        'width': size + 'px',
-        'border-radius': roundness + 'px',
-      }"
-      alt="avatar"
-    >
-  </div>
+    class="avatar-container"
+  ></div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
-  name: 'Avatar',
+  name: "Avatar",
 
   props: {
     showAvatar: {
       type: Boolean,
-      required: true
+      required: true,
     },
     src: {
       type: String,
-      required: true
+      required: true,
     },
     size: {
       type: Number,
-      required: true
+      required: true,
     },
     roundness: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
-    ...mapState(['basic']),
-    computedStyle () {
+    ...mapState(["basic"]),
+    computedStyle() {
       const style = {
-        width: this.size + 'px',
-        borderRadius: this.roundness + 'px'
-      }
+        width: this.size + "px",
+        height: this.size + "px",
+        borderRadius: this.roundness + "px",
+        background: `url(${this.src}) center/cover no-repeat #eee`,
+      };
 
-      if (!this.basic.image.link) {
-        style.height = this.size + 'px'
-        style.background = `#eee`
-      }
-
-      return style
-    }
-  }
-}
+      return style;
+    },
+  },
+};
 </script>
+
+<style>
+.avatar-container {
+  margin-right: 10px;
+}
+</style>

@@ -24,9 +24,7 @@
                 />
               </el-col>
               <el-col :span="8">
-                <el-button @click="onAddLink">
-                  Save link
-                </el-button>
+                <el-button @click="onAddLink"> Save link </el-button>
               </el-col>
             </el-row>
             <div class="desc">
@@ -36,32 +34,18 @@
         </div>
       </el-form-item>
       <el-row :gutter="20">
-        <el-col
-          v-for="(item, index) in basic.fields"
-          :key="item.id"
-          :span="12"
-        >
-          <field-item
-            :is-addon-field="index > 5"
-            :index="index"
-          />
+        <el-col v-for="(item, index) in basic.fields" :key="item.id" :span="12">
+          <field-item :is-addon-field="index > 5" :index="index" />
         </el-col>
       </el-row>
       <el-form-item>
-        <el-button
-          type="primary"
-          style="width: 100%;"
-          @click="onAddField"
-        >
+        <el-button type="primary" style="width: 100%" @click="onAddField">
           Add custom field
         </el-button>
       </el-form-item>
     </el-form>
     <!-- Add new field dialog -->
-    <el-dialog
-      title="Add new field"
-      :visible.sync="showDialog"
-    >
+    <el-dialog title="Add new field" :visible.sync="showDialog">
       <el-alert
         v-if="showAlert"
         title="Label is exist"
@@ -72,10 +56,7 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="Label">
-              <el-input
-                ref="fieldName"
-                v-model.trim="fieldName"
-              />
+              <el-input ref="fieldName" v-model.trim="fieldName" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -85,10 +66,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="Type">
-              <el-select
-                v-model="filedType"
-                style="width:100%;"
-              >
+              <el-select v-model="filedType" style="width: 100%">
                 <el-option
                   v-for="item in attributes.types"
                   :key="item.value"
@@ -99,13 +77,8 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item style="text-align: right;">
-          <el-button
-            type="primary"
-            @click="addField"
-          >
-            Add field
-          </el-button>
+        <el-form-item style="text-align: right">
+          <el-button type="primary" @click="addField"> Add field </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -113,33 +86,33 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { guid } from '../util/helpers'
-import FieldItem from './FieldItem'
-import Upload from '@/components/Upload'
+import { mapState } from "vuex";
+import { guid } from "../util/helpers";
+import FieldItem from "./FieldItem";
+import Upload from "@/components/Upload";
 
 export default {
-  name: 'Basic',
+  name: "Basic",
 
   components: {
     FieldItem,
-    Upload
+    Upload,
   },
 
-  data () {
+  data() {
     return {
-      fieldName: '',
-      filedValue: '',
-      filedType: 'text',
-      imageLink: '',
+      fieldName: "",
+      filedValue: "",
+      filedType: "text",
+      imageLink: "",
       showDialog: false,
       showAlert: false,
-      imageUrl: ''
-    }
+      imageUrl: "",
+    };
   },
 
   computed: {
-    ...mapState(['attributes', 'basic'])
+    ...mapState(["attributes", "basic"]),
     // imageUrl: {
     //   // get () {
     //   //   return this.basic.image.link
@@ -150,99 +123,99 @@ export default {
     // }
   },
 
-  created () {
-    this.$ga.page(this.$router)
+  created() {
+    this.$ga.page(this.$router);
   },
-  async mounted () {
-    this.getSignDetails()
+  async mounted() {
+    this.getSignDetails();
   },
 
   methods: {
-    async getSignDetails () {
+    async getSignDetails() {
       try {
-        const baseURL = process.env.VUE_APP_API_BASE_URL
-        const userId = localStorage.getItem('userId')
-        const URL = `${baseURL}/signature/get-sign-details/${userId}`
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const userId = localStorage.getItem("userId");
+        const URL = `${baseURL}/signature/get-sign-details/${userId}`;
 
-        const response = await fetch(URL)
+        const response = await fetch(URL);
         if (response.status === 200) {
-          const result = await response.json()
-          this.imageUrl = result.data.imgURL
-          this.$store.dispatch('setImageUrl', result.data.imgURL)
+          const result = await response.json();
+          this.imageUrl = result.data.imgURL;
+          this.$store.dispatch("setImageUrl", result.data.imgURL);
         } else {
-          console.error('An error occurred:')
+          console.error("An error occurred:");
         }
       } catch (error) {
-        console.error('An error occurred:', error)
+        console.error("An error occurred:", error);
       }
     },
-    addField () {
+    addField() {
       const newFiled = {
         name: this.fieldName,
         value: this.filedValue,
         type: this.filedType,
-        id: guid()
-      }
+        id: guid(),
+      };
 
-      this.$store.dispatch('addField', newFiled)
-      this.fieldName = ''
-      this.filedValue = ''
-      this.showDialog = false
+      this.$store.dispatch("addField", newFiled);
+      this.fieldName = "";
+      this.filedValue = "";
+      this.showDialog = false;
     },
-    onAddField () {
-      this.showDialog = true
+    onAddField() {
+      this.showDialog = true;
       this.$nextTick(() => {
-        this.$refs.fieldName.focus()
-      })
+        this.$refs.fieldName.focus();
+      });
     },
-    async onAddLink () {
+    async onAddLink() {
       try {
-        const baseURL = process.env.VUE_APP_API_BASE_URL
-        const userId = localStorage.getItem('userId')
-        const URL = `${baseURL}/signature/update-img-link/${userId}`
+        const baseURL = process.env.VUE_APP_API_BASE_URL;
+        const userId = localStorage.getItem("userId");
+        const URL = `${baseURL}/signature/update-img-link/${userId}`;
 
         const response = await fetch(URL, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            imageLink: this.imageUrl
-          })
-        })
+            imageLink: this.imageUrl,
+          }),
+        });
         if (response.status === 200) {
           this.$notify(
             {
-              group: 'top',
-              title: 'Image updated successfully'
+              group: "top",
+              title: "Image updated successfully",
             },
             4000
-          )
-          this.getSignDetails()
+          );
+          this.getSignDetails();
 
-          const result = await response.json()
-          this.imageUrl = result.data.imgURL
+          const result = await response.json();
+          this.imageUrl = result.data.imgURL;
         } else {
-          console.error('An error occurred:')
+          console.error("An error occurred:");
         }
       } catch (error) {
-        console.error('An error occurred:', error)
+        console.error("An error occurred:", error);
       }
       // this.$store.dispatch('updateImage', { link: this.imageUrl })
     },
-    onClearImageLink () {
-      this.imageLink = ''
-      this.onAddLink()
+    onClearImageLink() {
+      this.imageLink = "";
+      this.onAddLink();
     },
-    onUpload (url) {
-      this.$store.dispatch('updateImage', { link: url })
-    }
-  }
-}
+    onUpload(url) {
+      this.$store.dispatch("updateImage", { link: url });
+    },
+  },
+};
 </script>
 
 <style lang="scss">
-@import '../assets/scss/variables';
+@import "../assets/scss/variables";
 
 .image-preview-wrapper {
   display: flex;

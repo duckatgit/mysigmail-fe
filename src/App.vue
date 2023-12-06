@@ -27,7 +27,6 @@
     </div>
     <div
       v-if="currentPathname.includes('dashboard')"
-
       id="new-app"
       v-page-loading="app.loading"
     >
@@ -39,24 +38,24 @@
 </template>
 
 <script>
+import Sidebar from "./components/Sidebar";
+import ConfigPanel from "./components/ConfigPanel";
+import Preview from "./components/Preview";
+import { mapState } from "vuex";
+import Signup from "./views/auth/Signup.vue";
+import VerifyEmail from "./views/auth/VerifyEmail.vue";
+import Signin from "./views/auth/Signin.vue";
+import ForgotPassword from "./views/auth/ForgotPassword.vue";
+import SetNewPassword from "./views/auth/SetNewPassword.vue";
+import FAQ from "./views/FAQ.vue";
+import { EventBus } from "./util/EventBus";
 
-import Sidebar from './components/Sidebar'
-import ConfigPanel from './components/ConfigPanel'
-import Preview from './components/Preview'
-import { mapState } from 'vuex'
-import Signup from './views/auth/Signup.vue'
-import VerifyEmail from './views/auth/VerifyEmail.vue'
-import Signin from './views/auth/Signin.vue'
-import ForgotPassword from './views/auth/ForgotPassword.vue'
-import SetNewPassword from './views/auth/SetNewPassword.vue'
-import FAQ from './views/FAQ.vue'
+import Vue from "vue";
+import Notifications from "vt-notifications";
 
-import Vue from 'vue'
-import Notifications from 'vt-notifications'
-
-Vue.use(Notifications)
+Vue.use(Notifications);
 export default {
-  name: 'App',
+  name: "App",
   components: {
     Sidebar,
     ConfigPanel,
@@ -66,64 +65,83 @@ export default {
     Signin,
     ForgotPassword,
     SetNewPassword,
-    FAQ
+    FAQ,
   },
 
-  data () {
+  data() {
     return {
       currentPathname: window.location.pathname, // Initialize the variable with the current path
-      token: localStorage.getItem('token')
-    }
+      token: localStorage.getItem("token"),
+    };
   },
 
   computed: {
-    ...mapState(['app', 'basic', 'options'])
+    ...mapState(["app", "basic", "options"]),
   },
   watch: {
-    '$route.path': function (newPath, oldPath) {
-      this.currentPathname = newPath // Update the variable when the route changes
+    "$route.path": function (newPath, oldPath) {
+      this.currentPathname = newPath; // Update the variable when the route changes
+    },
+  },
+
+  async created() {
+    this.$store.commit("SET_LOADING", true);
+    await this.$store.dispatch("addInitialProject");
+    this.$store.commit("SET_LOADING", false);
+  },
+  async mounted() {
+    const currentPath = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+    const google = localStorage.getItem("googleApi");
+    if (google) {
+      const baseURL = process.env.VUE_APP_API_BASE_URL;
+
+      const URL = `${baseURL}/upload/googleAuthCallback`;
+
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: code }), // Send 'code' in the request body
+      });
+      const result = await response.json();
+      this.token = result.accessToken;
+      this.userName = result.name;
+      EventBus.$emit("dataChanged", this.userName);
     }
-  },
-
-  async created () {
-    this.$store.commit('SET_LOADING', true)
-    await this.$store.dispatch('addInitialProject')
-    this.$store.commit('SET_LOADING', false)
-  },
-  async mounted () {
-    const currentPath = window.location.pathname
-    if (currentPath.includes('dashboard')) {
-      try {
-        const baseURL = process.env.VUE_APP_API_BASE_URL
-
-        const URL = `${baseURL}/auth/validate-token`
-
-        const response = await fetch(URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}` // Include the bearer token
-          }
-        })
-
-        if (response.status === 401) {
-          this.$notify(
-            {
-              group: 'top',
-              title: 'Session Expired!'
+    if (!google) {
+      if (currentPath.includes("dashboard")) {
+        try {
+          const baseURL = process.env.VUE_APP_API_BASE_URL;
+          const URL = `${baseURL}/auth/validate-token`;
+          const response = await fetch(URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.token}`, // Include the bearer token
             },
-            4000
-          )
-          this.$router.push({ path: '/sign-in' })
-          localStorage.removeItem('token')
+          });
+          console.log(response);
+          if (response.status === 401) {
+            this.$notify(
+              {
+                group: "top",
+                title: "Session Expired!",
+              },
+              4000
+            );
+            this.$router.push({ path: "/sign-in" });
+            localStorage.removeItem("token");
+          }
+        } catch (error) {
+          console.error("An error occurred:", error);
         }
-      } catch (error) {
-        console.error('An error occurred:', error)
       }
     }
-  }
-
-}
+  },
+};
 </script>
 
 <style lang="scss">
